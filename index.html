@@ -1,0 +1,3804 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>HomeWise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  tailwind.config = { theme: { extend: { fontFamily: { sans: ['Poppins', 'system-ui', 'sans-serif'] } } } };
+</script>
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100dvh;
+      background-color: #FFFFFF;
+      color: #1A1A1A;
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F7F6F3;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #E4E1DA;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #f46c6c;
+    }
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-page {
+      animation: fadeSlideUp 0.22s ease-out forwards;
+    }
+    @keyframes pulseDot {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+    .typing-dot:nth-child(1) { animation: pulseDot 1.2s infinite 0s; }
+    .typing-dot:nth-child(2) { animation: pulseDot 1.2s infinite 0.2s; }
+    .typing-dot:nth-child(3) { animation: pulseDot 1.2s infinite 0.4s; }
+
+    .no-scrollbar { scrollbar-width: none; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+
+    /* ---- Home viewer overlay ---- */
+    .zp {
+      fill: rgba(255,255,255,0.03);
+      stroke: rgba(255,255,255,0.45);
+      stroke-width: 1.2;
+      stroke-dasharray: 4 3;
+      vector-effect: non-scaling-stroke;
+      cursor: pointer;
+      transition: fill .15s ease, stroke .15s ease, stroke-width .15s ease;
+      outline: none;
+      stroke-linejoin: round;
+    }
+    .tone-light .zp {
+      fill: rgba(26,26,26,0.04);
+      stroke: rgba(26,26,26,0.55);
+    }
+    .zp:hover, .zp:focus-visible, .zp.hovered {
+      fill: color-mix(in srgb, var(--c) 38%, transparent);
+      stroke: var(--c);
+      stroke-dasharray: none;
+      stroke-width: 2.6;
+    }
+    .zp.all {
+      fill: color-mix(in srgb, var(--c) 26%, transparent);
+      stroke: var(--c);
+      stroke-dasharray: none;
+      stroke-width: 1.8;
+    }
+    .zp.active {
+      fill: color-mix(in srgb, var(--c) 46%, transparent);
+      stroke: var(--c);
+      stroke-dasharray: none;
+      stroke-width: 3.2;
+    }
+    .vdot { position: absolute; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 6px; transition: left .18s ease, top .18s ease; }
+    .vdot-pt { width: 12px; height: 12px; border-radius: 9999px; background: var(--c); border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.45); flex: none; }
+    .vdot-active .vdot-pt { animation: ping 1.8s ease-out infinite; }
+    .vdot-label {
+      position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); white-space: nowrap;
+      padding: 3px 9px; border-radius: 9999px; background: #fff; color: #1A1A1A; font-size: 11px; font-weight: 600;
+      border: 1.5px solid var(--c); box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    }
+    @keyframes ping { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--c) 70%, transparent); } 100% { box-shadow: 0 0 0 14px transparent; } }
+    .vnav {
+      position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 9999px;
+      display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 15;
+      background: rgba(255,255,255,.92); color: #1A1A1A; border: 1px solid #E4E1DA; transition: background .15s, transform .15s;
+    }
+    .vnav:hover { background: #fff; color: #C7281E; transform: translateY(-50%) scale(1.06); }
+    .vtip {
+      position: absolute; z-index: 25; pointer-events: none; padding: 6px 12px; border-radius: 9999px; background: #fff; color: #1A1A1A;
+      font-size: 11px; font-weight: 600; border: 1px solid #E4E1DA; box-shadow: 0 4px 12px rgba(0,0,0,.28); transition: opacity .12s; white-space: nowrap;
+    }
+    @keyframes vfadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .vfade { animation: vfadeIn .25s ease-out; }
+    @media (prefers-reduced-motion: reduce) { .vdot-active .vdot-pt, .vfade, .animate-page { animation: none; } }
+    button:focus-visible { outline: 2px solid #C7281E; outline-offset: 2px; }
+  </style>
+<div class="bg-white text-[#1A1A1A] antialiased selection:bg-[#fbbc76]/40">
+  <!-- Main App Container -->
+  <div id="app" class="min-h-dvh flex flex-col md:flex-row w-full max-w-full overflow-x-hidden"></div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <script>
+    /********************************************************************
+     * DATA LAYER (WITH // VERIFY ANNOTATIONS AS REQUIRED)
+     ********************************************************************/
+
+    // VERIFY: Only Section 70(1) of the Street, Drainage and Building Act 1974 (Act 133) is a confirmed statutory clause.
+    // VERIFY: All other township renovation guideline explanations, clauses, and requirements below are demo content and must be verified against official Sime Darby Property township guidelines.
+    const ZONES_DATA = [
+      {
+        id: "front-gate",
+        name: "Front gate and fence",
+        level: "yellow", // VERIFY
+        explanation: "Changing your gate or fence usually needs approval from township management, mainly for height and design.", // VERIFY
+        clause: "Township renovation guidelines: fences and gates", // VERIFY
+        requirements: [
+          { group: "Documents", text: "Gate or fence design drawing" }, // VERIFY
+          { group: "Documents", text: "Management approval form" }, // VERIFY
+          { group: "Deposit", text: "Renovation deposit (amount set by the township)" }, // VERIFY
+          { group: "Work hours", text: "Work only in the permitted hours" }, // VERIFY
+          { group: "Safety", text: "Keep the road and walkway clear of materials" } // VERIFY
+        ]
+      },
+      {
+        id: "exterior-wall",
+        name: "Exterior wall and windows",
+        level: "yellow", // VERIFY
+        explanation: "Changing the look of the outside of your house, such as colors or window size, usually needs management approval to keep the township look consistent.", // VERIFY
+        clause: "Township renovation guidelines: external appearance", // VERIFY
+        requirements: [
+          { group: "Documents", text: "Photo and description of the planned change" }, // VERIFY
+          { group: "Documents", text: "Management approval form" }, // VERIFY
+          { group: "Deposit", text: "Renovation deposit (amount set by the township)" }, // VERIFY
+          { group: "Work hours", text: "Work only in the permitted hours" }, // VERIFY
+          { group: "Safety", text: "Use proper scaffolding for high work" } // VERIFY
+        ]
+      },
+      {
+        id: "internal-wall",
+        name: "Internal partition wall",
+        level: "green", // VERIFY
+        explanation: "Non-structural walls inside the house, such as light partitions, are usually allowed. Confirm with a professional that the wall is not holding up the building, and inform management.", // VERIFY
+        clause: "Township renovation guidelines: internal works", // VERIFY
+        requirements: [
+          { group: "Documents", text: "Notice of works to management" }, // VERIFY
+          { group: "Documents", text: "Contractor name and contact" }, // VERIFY
+          { group: "Work hours", text: "Work only in the permitted hours" }, // VERIFY
+          { group: "Safety", text: "Confirm the wall is non-structural before demolition" } // VERIFY
+        ]
+      },
+      {
+        id: "structural-wall",
+        name: "Structural wall, beam, or column",
+        level: "red", // VERIFY
+        explanation: "Removing or changing a wall that holds up the building needs written approval from the local authority (PBT) and a professional engineer. Doing it without approval is against the law.", // VERIFY
+        clause: "Section 70(1), Street, Drainage and Building Act 1974 (Act 133)", // Confirmed real statutory clause
+        requirements: [
+          { group: "Documents", text: "Building plan by a qualified person" }, // VERIFY
+          { group: "Documents", text: "Structural engineer's drawings and report" }, // VERIFY
+          { group: "Documents", text: "Written approval from the PBT before work starts" }, // VERIFY
+          { group: "Documents", text: "Management approval form" }, // VERIFY
+          { group: "Deposit", text: "Renovation deposit (amount set by the township)" }, // VERIFY
+          { group: "Safety", text: "Engineer must supervise the work" } // VERIFY
+        ]
+      },
+      {
+        id: "kitchen",
+        name: "Kitchen cabinets and tiles",
+        level: "green", // VERIFY
+        explanation: "Cosmetic changes like cabinets, tiles, and paint are usually allowed. Moving gas, water, or electrical lines needs a licensed contractor.", // VERIFY
+        clause: "Township renovation guidelines: internal works", // VERIFY
+        requirements: [
+          { group: "Documents", text: "Notice of works to management" }, // VERIFY
+          { group: "Documents", text: "Licensed contractor details if services are moved" }, // VERIFY
+          { group: "Work hours", text: "Work only in the permitted hours" }, // VERIFY
+          { group: "Safety", text: "Turn off gas and water supply before work" } // VERIFY
+        ]
+      },
+      {
+        id: "roof-extension",
+        name: "Roof, extension, or extra floor",
+        level: "red", // VERIFY
+        explanation: "Adding a floor, extending the house, or changing the roof structure counts as a building addition. It needs approval from the PBT and plans by a qualified person.", // VERIFY
+        clause: "Section 70(1), Street, Drainage and Building Act 1974 (Act 133)", // Confirmed real statutory clause
+        requirements: [
+          { group: "Documents", text: "Building plan by a qualified person" }, // VERIFY
+          { group: "Documents", text: "Structural engineer's drawings and report" }, // VERIFY
+          { group: "Documents", text: "Written approval from the PBT before work starts" }, // VERIFY
+          { group: "Documents", text: "Management approval form" }, // VERIFY
+          { group: "Deposit", text: "Renovation deposit (amount set by the township)" }, // VERIFY
+          { group: "Safety", text: "Safety barriers and debris control around the site" } // VERIFY
+        ]
+      },
+      {
+        id: "rear-extension",
+        name: "Rear yard and extension",
+        level: "red", // VERIFY
+        explanation: "Building out the back of the house, for example extending the wet kitchen into the yard, is a building addition. It needs approval from the PBT and plans by a qualified person.", // VERIFY
+        clause: "Section 70(1), Street, Drainage and Building Act 1974 (Act 133)", // Confirmed real statutory clause
+        requirements: [
+          { group: "Documents", text: "Building plan by a qualified person" }, // VERIFY
+          { group: "Documents", text: "Structural engineer's drawings and report" }, // VERIFY
+          { group: "Documents", text: "Written approval from the PBT before work starts" }, // VERIFY
+          { group: "Documents", text: "Site plan showing the rear boundary setback" }, // VERIFY
+          { group: "Documents", text: "Management approval form" }, // VERIFY
+          { group: "Deposit", text: "Renovation deposit (amount set by the township)" }, // VERIFY
+          { group: "Safety", text: "Safety barriers and debris control around the site" } // VERIFY
+        ]
+      },
+      {
+        id: "car-porch",
+        name: "Car porch canopy or awning",
+        level: "yellow", // VERIFY
+        explanation: "Adding or changing a roof over your car porch, such as an awning or canopy, usually needs management approval for size, height and design.", // VERIFY
+        clause: "Township renovation guidelines: external appearance", // VERIFY
+        requirements: [
+          { group: "Documents", text: "Drawing or photo of the planned canopy" }, // VERIFY
+          { group: "Documents", text: "Management approval form" }, // VERIFY
+          { group: "Deposit", text: "Renovation deposit (amount set by the township)" }, // VERIFY
+          { group: "Work hours", text: "Work only in the permitted hours" }, // VERIFY
+          { group: "Safety", text: "Keep the road and walkway clear of materials" } // VERIFY
+        ]
+      },
+      {
+        id: "side-terrace",
+        name: "Side terrace and garden deck",
+        level: "yellow", // VERIFY
+        explanation: "Light landscaping is usually fine. A fixed roof, pergola or built structure on the side terrace needs management approval, and a roofed structure may need the PBT.", // VERIFY
+        clause: "Township renovation guidelines: external appearance", // VERIFY
+        requirements: [
+          { group: "Documents", text: "Drawing of the planned pergola or structure" }, // VERIFY
+          { group: "Documents", text: "Management approval form" }, // VERIFY
+          { group: "Deposit", text: "Renovation deposit (amount set by the township)" }, // VERIFY
+          { group: "Work hours", text: "Work only in the permitted hours" }, // VERIFY
+          { group: "Safety", text: "Keep the boundary and drains clear of materials" } // VERIFY
+        ]
+      },
+      {
+        id: "bathroom",
+        name: "Bathroom tiles and fittings",
+        level: "green", // VERIFY
+        explanation: "Replacing tiles, sanitary ware and fittings is usually allowed. Moving pipes or redoing waterproofing should be done by a licensed contractor.", // VERIFY
+        clause: "Township renovation guidelines: internal works", // VERIFY
+        requirements: [
+          { group: "Documents", text: "Notice of works to management" }, // VERIFY
+          { group: "Documents", text: "Licensed contractor details if services are moved" }, // VERIFY
+          { group: "Work hours", text: "Work only in the permitted hours" }, // VERIFY
+          { group: "Safety", text: "Turn off gas and water supply before work" } // VERIFY
+        ]
+      },
+      {
+        id: "ac-ledge",
+        name: "A/C ledge and outdoor units",
+        level: "yellow", // VERIFY
+        explanation: "Adding or moving air-conditioner units changes the outside of the house, so management usually approves the position and size first.", // VERIFY
+        clause: "Township renovation guidelines: external appearance", // VERIFY
+        requirements: [
+          { group: "Documents", text: "Photo and description of the planned change" }, // VERIFY
+          { group: "Documents", text: "Management approval form" }, // VERIFY
+          { group: "Work hours", text: "Work only in the permitted hours" }, // VERIFY
+          { group: "Safety", text: "Use proper scaffolding for high work" } // VERIFY
+        ]
+      }
+    ];
+
+    // VERIFY: Demo tips content
+    const TIPS_DATA = [
+      {
+        id: "tip-1",
+        title: "Check Before You Hack Any Wall",
+        summary: "Under Section 70 of Act 133, altering any structural wall, column, or beam without written PBT approval is against the law.", // VERIFY
+        clause: "Section 70(1), Act 133",
+        level: "red",
+        zoneId: "structural-wall"
+      },
+      {
+        id: "tip-2",
+        title: "Keep Your Township Facade Consistent",
+        summary: "Changing your front gate height, window size, or exterior wall colors usually needs management approval first.", // VERIFY
+        clause: "Township renovation guidelines: external appearance", // VERIFY
+        level: "yellow",
+        zoneId: "front-gate"
+      },
+      {
+        id: "tip-3",
+        title: "Cosmetic Kitchen & Interior Works",
+        summary: "Replacing kitchen cabinets, floor tiles, or interior paint is usually allowed—just notify management and use licensed contractors.", // VERIFY
+        clause: "Township renovation guidelines: internal works", // VERIFY
+        level: "green",
+        zoneId: "kitchen"
+      }
+    ];
+
+    // VERIFY: Chatbot knowledge base (chat.json)
+    const CHAT_DATA = [
+      {
+        keywords: ["wall", "remove", "knock", "hack", "break"],
+        zone: "structural-wall",
+        answer: "It depends on the wall. A wall that holds up the building (structural) needs written approval from the PBT and an engineer. A light partition wall is usually fine, but tell management first. If you are not sure, treat it as structural until an engineer says otherwise.", // VERIFY
+        citation: {
+          title: "Section 70(1), Act 133",
+          text: "No one can build or alter a structure without written approval from the local authority." // VERIFY
+        }
+      },
+      {
+        keywords: ["extend", "extension", "floor", "storey", "add room", "roof"],
+        zone: "roof-extension",
+        answer: "Adding a floor or extending your house is a building addition. You need a plan by a qualified person, an engineer's report, and written approval from the PBT before any work starts.", // VERIFY
+        citation: {
+          title: "Section 70(1), Act 133",
+          text: "Additions without approval, or not following the approved plan, are against Section 70." // VERIFY
+        }
+      },
+      {
+        keywords: ["permit", "approval", "need", "allowed", "legal"],
+        zone: null,
+        answer: "Any change to the structure needs approval from the PBT. Cosmetic work like painting and tiles usually does not, but you should still inform township management. Use the 3D Home to check each part of your house.", // VERIFY
+        citation: {
+          title: "Section 70(1), Act 133",
+          text: "Written approval from the local authority is required for building works and additions." // VERIFY
+        }
+      },
+      {
+        keywords: ["deposit", "refund", "fee"],
+        zone: null,
+        answer: "Most townships ask for a renovation deposit, which is returned after the works are checked. The amount depends on your township, so confirm it with management.", // VERIFY
+        citation: {
+          title: "Township renovation guidelines: deposit",
+          text: "Deposit amount and refund conditions are set by township management." // VERIFY
+        }
+      },
+      {
+        keywords: ["hour", "time", "noise", "weekend", "sunday", "when"],
+        zone: null,
+        answer: "Noisy work is only allowed during set hours, and often not on Sundays and public holidays. Check the exact hours for your township with management.", // VERIFY
+        citation: {
+          title: "Township renovation guidelines: work hours",
+          text: "Renovation work is limited to permitted hours to protect residents." // VERIFY
+        }
+      },
+      {
+        keywords: ["gate", "fence", "grille", "porch"],
+        zone: "front-gate",
+        answer: "Changing your gate or fence usually needs management approval, mainly for height and design. Submit a simple drawing and wait for approval before building.", // VERIFY
+        citation: {
+          title: "Township renovation guidelines: fences and gates",
+          text: "Fence and gate changes follow township design and height limits." // VERIFY
+        }
+      },
+      {
+        keywords: ["contractor", "worker", "hire", "licensed", "electrician", "plumber"],
+        zone: null,
+        answer: "Use a licensed contractor, especially for electrical, gas, and structural work. Give management the contractor's name and contact before work starts.", // VERIFY
+        citation: {
+          title: "Township renovation guidelines: contractors",
+          text: "Contractor details must be provided before works begin." // VERIFY
+        }
+      },
+      {
+        keywords: ["paint", "tile", "cabinet", "kitchen", "floor tile", "wallpaper"],
+        zone: "kitchen",
+        answer: "Painting, tiles, cabinets, and similar cosmetic work are usually allowed without PBT approval. Inform management, and use a licensed contractor if you move any gas, water, or electrical lines.", // VERIFY
+        citation: {
+          title: "Township renovation guidelines: internal works",
+          text: "Cosmetic internal works generally do not need authority approval." // VERIFY
+        }
+      },
+      {
+        keywords: ["rear", "yard", "wet kitchen", "back of", "extend the kitchen"],
+        zone: "rear-extension",
+        answer: "Extending the back of your house, such as the wet kitchen, is a building addition. Hire a qualified person and an engineer first, and wait for written PBT approval before the contractor starts.", // VERIFY
+        citation: {
+          title: "Section 70(1), Act 133",
+          text: "Additions without approval, or not following the approved plan, are against Section 70." // VERIFY
+        }
+      },
+      {
+        keywords: ["terrace", "deck", "pergola", "garden", "patio"],
+        zone: "side-terrace",
+        answer: "Light landscaping on your side terrace is usually fine. A fixed roof or pergola needs management approval first, and a roofed structure may also need the PBT.", // VERIFY
+        citation: {
+          title: "Township renovation guidelines: external appearance",
+          text: "Fixed structures outside the house follow township design rules." // VERIFY
+        }
+      },
+      {
+        keywords: ["bathroom", "toilet", "shower", "sanitary"],
+        zone: "bathroom",
+        answer: "Replacing bathroom tiles and fittings is usually allowed. Inform management, and use a licensed contractor if you move pipes or redo waterproofing.", // VERIFY
+        citation: {
+          title: "Township renovation guidelines: internal works",
+          text: "Cosmetic internal works generally do not need authority approval." // VERIFY
+        }
+      },
+      {
+        keywords: ["aircond", "air-cond", "air cond", "a/c", "ledge", "awning", "canopy", "carport", "car porch"],
+        zone: "car-porch",
+        answer: "Awnings, canopies and outdoor air-conditioner units change the outside of your house, so management usually needs to approve the size and position before you install them.", // VERIFY
+        citation: {
+          title: "Township renovation guidelines: external appearance",
+          text: "External changes follow township design and size limits." // VERIFY
+        }
+      }
+    ];
+
+    const SUGGESTED_QUESTIONS = [
+      "Can I knock down a wall?",
+      "Do I need a permit to extend my roof?",
+      "What are the renovation work hours?",
+      "Do I need approval for kitchen cabinets?",
+      "Can I extend my wet kitchen at the back?"
+    ];
+
+    function getAnswer(question) {
+      const q = (question || "").toLowerCase().trim();
+      let bestMatch = null;
+      let highestScore = 0;
+
+      for (const item of CHAT_DATA) {
+        let score = 0;
+        for (const kw of item.keywords) {
+          if (q.includes(kw.toLowerCase())) {
+            score += kw.length;
+          }
+        }
+        if (score > highestScore) {
+          highestScore = score;
+          bestMatch = item;
+        }
+      }
+
+      if (bestMatch && highestScore > 0) {
+        return {
+          matched: true,
+          answer: bestMatch.answer,
+          citation: bestMatch.citation,
+          zone: bestMatch.zone,
+          verified: true
+        };
+      }
+
+      return {
+        matched: false,
+        answer: "I couldn't find an exact clause match for that question. Try tapping one of the suggested questions below, or explore the 3D Home model to inspect specific parts of your house.",
+        citation: null,
+        zone: null,
+        verified: false
+      };
+    }
+
+    const INITIAL_POSTS = [
+      {
+        id: "post-1",
+        title: "Official Reminder: Written PBT Approval Required Before Structural Wall or Extension Works",
+        text: "Under Section 70(1) of the Street, Drainage and Building Act 1974 (Act 133), no resident may remove a load-bearing wall, alter columns/beams, or build an extension without prior written approval from the local authority (PBT) and engineering plans by a Qualified Person.", // VERIFY
+        author: "Township Management",
+        time: "2 days ago",
+        category: "Tips",
+        label: "Official rule",
+        comments: [
+          { id: "c1", author: "Hafiz (Elmina)", time: "1 day ago", text: "Super clear when you look at the red zones in the 3D Home tab. Saved us from hacking a structural pillar!" },
+          { id: "c2", author: "Mei Ling (Bukit Jelutong)", time: "18 hours ago", text: "Always ask your engineer to verify the house structural layout drawing first." }
+        ]
+      },
+      {
+        id: "post-2",
+        title: "Permitted Work Hours & Township Renovation Deposit Guide",
+        text: "Renovation works are restricted to permitted hours and are prohibited on Sundays and public holidays to protect resident comfort. A refundable renovation deposit and contractor registration form must be submitted before materials enter the township.", // VERIFY
+        author: "Township Management",
+        time: "3 days ago",
+        category: "Tips",
+        label: "Official rule",
+        comments: [
+          { id: "c3", author: "Rajan (Bandar Bukit Raja)", time: "2 days ago", text: "Our deposit refund was smooth once we cleared all leftover sand and bricks from the front road." },
+          { id: "c4", author: "Sarah K.", time: "1 day ago", text: "Make sure your lorry drivers know the gate entry hours too!" }
+        ]
+      },
+      {
+        id: "post-3",
+        title: "Planning to extend our wet kitchen at the back — what order should we start?",
+        text: "Hi neighbors! We just collected keys for our terrace house in Bandar Bukit Raja and want to extend the back kitchen by 5 feet. Should we hire the contractor first or get the architect/engineer drawings for PBT approval?",
+        author: "Ali R.",
+        time: "4 hours ago",
+        category: "Questions",
+        label: "Resident opinion",
+        comments: [
+          { id: "c5", author: "Daniel Tan", time: "3 hours ago", text: "Hire your Qualified Person / Architect and Professional Engineer first! You need written PBT approval before the contractor touches anything." },
+          { id: "c6", author: "Farah N.", time: "2 hours ago", text: "Add 'Roof, extension, or extra floor' to your HomeWise checklist—it lists all 6 documents and safety items you need." },
+          { id: "c7", author: "Chong W.", time: "1 hour ago", text: "Check with management if our phase has standard reference drawings—it speeds up submission." }
+        ]
+      },
+      {
+        id: "post-4",
+        title: "Great CIDB & ST Licensed Electrician and Plumber in Elmina",
+        text: "We relocated our kitchen island sink and induction point last month. Using a licensed plumber and electrician made a huge difference—they pressure-tested all pipes before tiling and gave management their license copies on day one.",
+        author: "Nadia & Amir",
+        time: "1 day ago",
+        category: "Vendors",
+        label: "Resident opinion",
+        comments: [
+          { id: "c8", author: "Kelvin L.", time: "15 hours ago", text: "Did they also install a dedicated isolator switch for the induction hob?" },
+          { id: "c9", author: "Nadia & Amir", time: "10 hours ago", text: "Yes, dedicated 32A circuit from the DB with full labeling!" }
+        ]
+      },
+      {
+        id: "post-5",
+        title: "3 Dust Control Tips That Saved Our Sliding Doors During Tile Hacking",
+        text: "Before hacking internal partition walls or floor tiles, ask your contractor to tape heavy plastic drop sheets over all sliding door tracks and air-conditioning blower units. Cement dust ruins rollers if left uncovered.",
+        author: "Victor Lim",
+        time: "4 days ago",
+        category: "Tips",
+        label: "Resident opinion",
+        comments: [
+          { id: "c10", author: "Aisha M.", time: "3 days ago", text: "Corrugated floor protection sheets on the staircase are also a lifesaver!" },
+          { id: "c11", author: "Zul H.", time: "2 days ago", text: "Also remind workers to sweep and wash the road outside before 5pm daily." }
+        ]
+      },
+      {
+        id: "post-6",
+        title: "Neighbor Courtesy: Simple WhatsApp Message Before Hacking Starts",
+        text: "Before our 3-day kitchen tile replacement started, we sent a quick WhatsApp note to our left and right neighbors with our contractor's contact and hacking schedule. Zero complaints and everyone appreciated the heads-up!",
+        author: "Priya S.",
+        time: "5 days ago",
+        category: "Tips",
+        label: "Resident opinion",
+        comments: [
+          { id: "c12", author: "Jason Yap", time: "4 days ago", text: "My neighbor works from home, so knowing the noisy hours helped him book a meeting room on those two mornings." },
+          { id: "c13", author: "Siti R.", time: "3 days ago", text: "Best way to start life in a new township!" }
+        ]
+      },
+      {
+        id: "post-7",
+        title: "Trackless Folding Front Gate Upgrade — Approval Took Only 4 Days",
+        text: "We replaced our front gate in Bukit Jelutong with a trackless folding design. Because we kept the pillar height unchanged and attached the vendor's dimension drawing to the management form, approval was super fast.",
+        author: "Irwan Z.",
+        time: "6 days ago",
+        category: "Vendors",
+        label: "Resident opinion",
+        comments: [
+          { id: "c14", author: "Grace T.", time: "5 days ago", text: "Good tip! Did you need to place the renovation deposit for just the gate installation?" },
+          { id: "c15", author: "Irwan Z.", time: "4 days ago", text: "Yes, standard refundable deposit applied and we got it back right after inspection." }
+        ]
+      },
+      {
+        id: "post-8",
+        title: "Aluminum vs Melamine Kitchen Cabinets for Wet & Dry Kitchens",
+        text: "For our wet kitchen we chose full aluminum cabinet carcasses (100% waterproof and termite-proof), and moisture-resistant board for the dry kitchen island. Since it's cosmetic internal work, we only needed to submit a Notice of Works!",
+        author: "Hannah C.",
+        time: "1 week ago",
+        category: "Tips",
+        label: "Resident opinion",
+        comments: [
+          { id: "c16", author: "Marcus O.", time: "6 days ago", text: "Modern powder-coated aluminum looks just like matte wood now!" },
+          { id: "c17", author: "Lina K.", time: "5 days ago", text: "Remember to turn off the main water valve before the installer drills near sink walls." }
+        ]
+      }
+    ];
+
+    /********************************************************************
+     * STATE MANAGEMENT (Reactive Store)
+     ********************************************************************/
+    const state = {
+      route: '/welcome', // '/welcome' | '/setup' | '/home' | '/explorer' | '/checklist' | '/assistant' | '/community' | '/community-detail'
+      mode: null, // 'explore' | 'renovate' | null
+      project: 'Bandar Bukit Raja',
+      unitType: 'Terrace house',
+      selectedZones: ['structural-wall', 'kitchen'],
+      checkedItems: ['Notice of works to management'],
+      // 3D Animation Explorer state
+      activeZoneId: 'structural-wall',
+      showAllColors: false,
+      viewId: 'l1', // 'front' | 'side' | 'rear' | 'l1' | 'l2' | 'plan'
+      isVideoPlaying: false,
+      activeVideoSrc: 'Anim_CornerCross_GFloor.mp4',
+      videoAvailable: {}, // filename -> boolean or blobURL
+      customVideoUrls: {}, // filename -> blobURL if user loads local files
+      initialPoseTime: 0,
+      fadeNext: false,
+      // Assistant Chat state
+      messages: [
+        {
+          id: 'm-welcome',
+          sender: 'bot',
+          text: "Hello! I'm your HomeWise Assistant. Ask me any question about renovating your home in a Sime Darby Property township, and I'll check the rules and Section 70 of Act 133 for you.",
+          citation: null,
+          zone: null,
+          verified: false
+        }
+      ],
+      isBotTyping: false,
+      // Community state
+      posts: JSON.parse(JSON.stringify(INITIAL_POSTS)),
+      selectedPostId: null,
+      communitySearch: '',
+      communityFilter: 'All',
+      isNewPostModalOpen: false,
+      // Hidden 5-tap logo reset counter
+      logoTapCount: 0,
+      logoTapTimer: null
+    };
+
+    /********************************************************************
+     * HELPER FUNCTIONS
+     ********************************************************************/
+    function getZone(zoneId) {
+      return ZONES_DATA.find(z => z.id === zoneId) || null;
+    }
+
+    function getComplianceBadge(level) {
+      if (level === 'green') {
+        return {
+          bg: 'bg-[#EAF5EF]',
+          text: 'text-[#2F8F5B]',
+          border: 'border-[#2F8F5B]/30',
+          dot: 'bg-[#2F8F5B]',
+          hex: '#2F8F5B',
+          tintHex: '#EAF5EF',
+          label: 'Allowed'
+        };
+      }
+      if (level === 'yellow') {
+        return {
+          bg: 'bg-[#FDF4E7]',
+          text: 'text-[#B7791F]',
+          border: 'border-[#B7791F]/30',
+          dot: 'bg-[#B7791F]',
+          hex: '#B7791F',
+          tintHex: '#FDF4E7',
+          label: 'Needs approval'
+        };
+      }
+      return {
+        bg: 'bg-[#FBEAE9]',
+        text: 'text-[#B3261E]',
+        border: 'border-[#B3261E]/30',
+        dot: 'bg-[#B3261E]',
+        hex: '#B3261E',
+        tintHex: '#FBEAE9',
+        label: 'Needs PBT + engineer'
+      };
+    }
+
+    function getDeduplicatedChecklist() {
+      const groups = {
+        'Documents': [],
+        'Deposit': [],
+        'Work hours': [],
+        'Safety': []
+      };
+      const itemMap = new Map();
+
+      for (const zId of state.selectedZones) {
+        const zone = getZone(zId);
+        if (!zone) continue;
+        for (const req of zone.requirements) {
+          if (!itemMap.has(req.text)) {
+            const entry = { group: req.group, text: req.text, zones: [zone] };
+            itemMap.set(req.text, entry);
+            if (groups[req.group]) {
+              groups[req.group].push(entry);
+            }
+          } else {
+            const existing = itemMap.get(req.text);
+            if (!existing.zones.some(z => z.id === zone.id)) {
+              existing.zones.push(zone);
+            }
+          }
+        }
+      }
+
+      const allItems = Array.from(itemMap.values());
+      const totalCount = allItems.length;
+      const checkedCount = allItems.filter(i => state.checkedItems.includes(i.text)).length;
+      const percentage = totalCount === 0 ? 0 : Math.round((checkedCount / totalCount) * 100);
+      const hasRedZone = state.selectedZones.some(id => {
+        const z = getZone(id);
+        return z && z.level === 'red';
+      });
+
+      return { groups, totalCount, checkedCount, percentage, hasRedZone };
+    }
+
+    function showToast(message, type = 'default') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const toast = document.createElement('div');
+      const colorClass = type === 'red'
+        ? 'bg-[#FBEAE9] text-[#B3261E] border-[#B3261E]'
+        : 'bg-[#F7F6F3] text-[#1A1A1A] border-[#E4E1DA]';
+      toast.className = `px-4 py-3 rounded-[16px] border border-t-[3px] border-t-[#f48436] text-sm font-medium flex items-center gap-2.5 animate-page pointer-events-auto ${colorClass}`;
+      toast.innerHTML = `
+        <span class="w-2 h-2 rounded-full bg-[#e93b30] shrink-0"></span>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.25s ease';
+        setTimeout(() => toast.remove(), 260);
+      }, 2600);
+    }
+
+    /********************************************************************
+     * ACTIONS & NAVIGATION
+     ********************************************************************/
+    function navigate(route, extra = {}) {
+      let targetJumpView = null;
+      if (extra.zoneId) {
+        state.activeZoneId = extra.zoneId;
+        targetJumpView = pickBestViewForZone(extra.zoneId);
+      }
+      if (extra.postId) {
+        state.selectedPostId = extra.postId;
+      }
+      if (!state.mode && route !== '/welcome' && route !== '/setup') {
+        state.route = '/welcome';
+      } else {
+        state.route = route;
+      }
+      try {
+        if (window.location.hash !== '#' + state.route) {
+          history.replaceState(null, '', '#' + state.route);
+        }
+      } catch (err) {}
+      renderApp();
+      if (route === '/explorer') {
+        if (targetJumpView && targetJumpView !== state.viewId) {
+          setView(targetJumpView);
+        } else {
+          syncExplorerStageMedia(false);
+        }
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function handleLogoTap() {
+      state.logoTapCount += 1;
+      if (state.logoTapTimer) clearTimeout(state.logoTapTimer);
+      if (state.logoTapCount >= 5) {
+        state.logoTapCount = 0;
+        resetDemoState();
+        showToast("Demo reset complete! Returned to Welcome screen.");
+        return;
+      }
+      state.logoTapTimer = setTimeout(() => {
+        state.logoTapCount = 0;
+      }, 1800);
+    }
+
+    function resetDemoState() {
+      state.mode = null;
+      state.project = 'Bandar Bukit Raja';
+      state.unitType = 'Terrace house';
+      state.selectedZones = [];
+      state.checkedItems = [];
+      state.activeZoneId = 'structural-wall';
+      state.viewId = 'l1';
+      state.isVideoPlaying = false;
+      state.showAllColors = false;
+      state.posts = JSON.parse(JSON.stringify(INITIAL_POSTS));
+      state.route = '/welcome';
+      renderApp();
+    }
+
+    function startExploreMode() {
+      state.mode = 'explore';
+      if (state.selectedZones.length === 0) {
+        state.selectedZones = ['structural-wall'];
+      }
+      navigate('/home');
+      showToast("Switched to 'Just exploring' mode");
+    }
+
+    function startRenovateSetup() {
+      navigate('/setup');
+    }
+
+    function completeSetup(e) {
+      if (e) e.preventDefault();
+      const projSelect = document.getElementById('setup-project');
+      const unitSelect = document.getElementById('setup-unit');
+      if (projSelect) state.project = projSelect.value;
+      if (unitSelect) state.unitType = unitSelect.value;
+      state.mode = 'renovate';
+      navigate('/home');
+      showToast(`Renovate mode ready: ${state.project} (${state.unitType})`);
+    }
+
+    function handleSwitchModeButton() {
+      if (state.mode === 'renovate') {
+        state.mode = 'explore';
+        showToast("Switched to 'Just exploring' mode");
+        if (state.route === '/welcome' || state.route === '/setup') {
+          state.route = '/home';
+        }
+        renderApp();
+      } else {
+        navigate('/setup');
+      }
+    }
+
+    function toggleZoneInChecklist(zoneId) {
+      const idx = state.selectedZones.indexOf(zoneId);
+      const zone = getZone(zoneId);
+      if (idx === -1) {
+        state.selectedZones.push(zoneId);
+        showToast(`Added "${zone.name}" to your checklist`);
+      } else {
+        state.selectedZones.splice(idx, 1);
+        const validTexts = new Set();
+        state.selectedZones.forEach(id => {
+          const z = getZone(id);
+          if (z) z.requirements.forEach(r => validTexts.add(r.text));
+        });
+        state.checkedItems = state.checkedItems.filter(t => validTexts.has(t));
+        showToast(`Removed "${zone.name}" from checklist`);
+      }
+      if (state.route === '/explorer') {
+        refreshExplorerUIOnly();
+        updateHeaderAndSidebarChecklistBadges();
+      } else {
+        renderApp();
+      }
+    }
+
+    function toggleChecklistItem(encodedText) {
+      const text = decodeURIComponent(encodedText);
+      const idx = state.checkedItems.indexOf(text);
+      if (idx === -1) {
+        state.checkedItems.push(text);
+      } else {
+        state.checkedItems.splice(idx, 1);
+      }
+      renderApp();
+    }
+
+    function startAliDemoStory() {
+      state.mode = 'renovate';
+      state.project = 'Bandar Bukit Raja';
+      state.unitType = 'Terrace house';
+      state.selectedZones = ['structural-wall'];
+      state.checkedItems = [];
+      state.activeZoneId = 'structural-wall';
+      state.viewId = 'l1';
+      state.showAllColors = true;
+      navigate('/explorer');
+      showToast("Loaded Ali's Demo Story: Terrace House Structural Wall (Red)");
+    }
+
+    /********************************************************************
+     * UI SHELL: SIDEBAR (DESKTOP) + HEADER + BOTTOM NAV (MOBILE)
+     ********************************************************************/
+    function renderNavigationShell(contentHtml) {
+      const isWelcomeOrSetup = state.route === '/welcome' || state.route === '/setup';
+      const checklistStats = getDeduplicatedChecklist();
+
+      const navItems = [
+        {
+          id: 'home',
+          label: 'Home',
+          route: '/home',
+          icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>`
+        },
+        {
+          id: 'explorer',
+          label: '3D Home',
+          route: '/explorer',
+          icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline stroke-linecap="round" stroke-linejoin="round" points="3.27 6.96 12 12.01 20.73 6.96"/><line stroke-linecap="round" stroke-linejoin="round" x1="12" y1="22.08" x2="12" y2="12"/></svg>`
+        },
+        {
+          id: 'assistant',
+          label: 'Assistant',
+          route: '/assistant',
+          icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>`
+        },
+        {
+          id: 'community',
+          label: 'Community',
+          route: '/community',
+          icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>`
+        }
+      ];
+
+      const isActiveTab = (itemRoute) => {
+        if (itemRoute === '/community' && state.route === '/community-detail') return true;
+        return state.route === itemRoute;
+      };
+
+      return `
+        <!-- Left Sidebar on Laptop/Tablet (768px and above) -->
+        ${!isWelcomeOrSetup ? `
+        <aside class="hidden md:flex flex-col w-64 lg:w-72 bg-[#F7F6F3] border-r border-[#E4E1DA] shrink-0 select-none justify-between p-5">
+          <div>
+            <!-- Brand Logo (5 taps resets demo) -->
+            <button onclick="handleLogoTap()" title="Tap 5 times to reset demo" class="flex items-center gap-3 text-left group w-full mb-8 cursor-pointer">
+              <div class="w-11 h-11 rounded-[14px] bg-[#e93b30] flex items-center justify-center text-white font-bold group-active:scale-95 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-10.5z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="text-xl font-bold tracking-tight text-[#1A1A1A] flex items-center gap-1">
+                  Home<span class="text-[#e93b30]">Wise</span>
+                </div>
+                <div class="text-[11px] text-[#666666]">Built for Sime Darby Property townships</div>
+              </div>
+            </button>
+
+            <!-- Primary 4 Tabs -->
+            <nav class="space-y-1.5">
+              ${navItems.map(item => {
+                const active = isActiveTab(item.route);
+                return `
+                  <button
+                    onclick="navigate('${item.route}')"
+                    class="w-full flex items-center gap-3.5 px-4 py-3 rounded-[12px] font-semibold text-sm transition-all cursor-pointer border-b-[3px] ${
+                      active
+                        ? 'bg-[#fbbc76]/25 text-[#1A1A1A] border-[#e93b30]'
+                        : 'text-[#666666] border-transparent hover:bg-[#f49c9c]/15 hover:text-[#1A1A1A]'
+                    }"
+                  >
+                    <span class="${active ? 'text-[#e93b30]' : 'text-[#666666]'}">${item.icon}</span>
+                    <span>${item.label}</span>
+                  </button>
+                `;
+              }).join('')}
+            </nav>
+
+            <!-- Quick Checklist Card inside Sidebar -->
+            <div class="mt-6 pt-6 border-t border-[#E4E1DA]">
+              <button
+                onclick="navigate('/checklist')"
+                class="w-full p-4 rounded-[16px] border transition-all text-left cursor-pointer ${
+                  state.route === '/checklist'
+                    ? 'bg-[#fbbc76]/25 border-[#E4E1DA] border-t-[3px] border-t-[#f48436]'
+                    : 'bg-[#FFFFFF] border-[#E4E1DA] hover:border-[#f46c6c]'
+                }"
+              >
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-semibold uppercase tracking-wider text-[#e93b30]">Smart Checklist</span>
+                  <span id="sidebar-zone-count" class="px-2 py-0.5 text-xs font-bold rounded-full bg-[#fbbc76]/25 text-[#1A1A1A] border border-[#E4E1DA]">${state.selectedZones.length} zones</span>
+                </div>
+                <div id="sidebar-item-count" class="text-sm font-medium text-[#1A1A1A] mb-2">${checklistStats.checkedCount} of ${checklistStats.totalCount} items done</div>
+                <div class="w-full h-2 bg-[#F7F6F3] rounded-full overflow-hidden border border-[#E4E1DA]">
+                  <div id="sidebar-progress-bar" class="h-full bg-[#C7281E] transition-all duration-300" style="width: ${checklistStats.percentage}%"></div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Sidebar Footer -->
+          <div class="pt-4 border-t border-[#E4E1DA] space-y-3">
+            <div class="bg-[#FFFFFF] rounded-[14px] p-3 border border-[#E4E1DA]">
+              <div class="text-[11px] uppercase tracking-wider text-[#666666]">Current Mode</div>
+              <div class="text-sm font-semibold text-[#1A1A1A] mt-0.5">
+                ${state.mode === 'renovate' ? 'I want to renovate' : 'Just exploring'}
+              </div>
+              ${state.mode === 'renovate' ? `<div class="text-xs text-[#666666] mt-0.5">${state.project} • ${state.unitType}</div>` : ''}
+            </div>
+            <p class="text-[11px] leading-relaxed text-[#666666]">
+              Built for Sime Darby Property townships • Demo data. Confirm rules with official guidelines.
+            </p>
+          </div>
+        </aside>
+        ` : ''}
+
+        <!-- Main Column -->
+        <div class="flex-1 flex flex-col min-w-0 min-h-dvh pb-20 md:pb-0 bg-[#FFFFFF]">
+          <!-- Top Header -->
+          <header class="sticky top-0 z-30 bg-[#FFFFFF] border-b border-[#E4E1DA] px-4 sm:px-6 py-3.5 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <button onclick="handleLogoTap()" title="Tap 5 times to reset demo" class="flex items-center gap-2.5 text-left cursor-pointer group">
+                <div class="md:hidden w-9 h-9 rounded-[12px] bg-[#e93b30] flex items-center justify-center text-white font-bold shrink-0 group-active:scale-95 transition">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-10.5z"/>
+                  </svg>
+                </div>
+                <div class="truncate">
+                  <span class="text-lg font-bold text-[#1A1A1A] md:hidden">Home<span class="text-[#e93b30]">Wise</span></span>
+                  <span class="hidden md:inline-block text-sm font-medium text-[#666666]">
+                    Built for Sime Darby Property townships • Interactive 3D Animation & Rule Explorer
+                  </span>
+                </div>
+              </button>
+            </div>
+
+            <!-- Right Actions: Checklist Shortcut + Switch Mode -->
+            <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+              ${!isWelcomeOrSetup ? `
+                <button
+                  onclick="navigate('/checklist')"
+                  class="inline-flex items-center gap-1.5 px-3 py-2 rounded-[14px] text-xs sm:text-sm font-semibold border transition cursor-pointer ${
+                    state.route === '/checklist'
+                      ? 'bg-[#fbbc76]/25 text-[#1A1A1A] border-[#e93b30]'
+                      : 'bg-[#F7F6F3] text-[#1A1A1A] border-[#E4E1DA] hover:border-[#f46c6c]'
+                  }"
+                >
+                  <svg class="w-4 h-4 text-[#e93b30]" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                  <span class="hidden sm:inline">Checklist</span>
+                  <span id="header-zone-count" class="px-1.5 py-0.2 rounded-full text-[11px] font-bold bg-[#FFFFFF] text-[#1A1A1A] border border-[#E4E1DA]">${state.selectedZones.length}</span>
+                </button>
+
+                <button
+                  onclick="handleSwitchModeButton()"
+                  class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[14px] text-xs sm:text-sm font-semibold border border-[#E4E1DA] bg-[#F7F6F3] text-[#1A1A1A] hover:border-[#f46c6c] hover:bg-[#f49c9c]/15 transition cursor-pointer"
+                >
+                  <svg class="w-4 h-4 text-[#e93b30]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                  <span>Switch mode</span>
+                </button>
+              ` : `
+                <button
+                  onclick="startAliDemoStory()"
+                  class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[14px] text-xs sm:text-sm font-semibold bg-[#F7F6F3] border border-[#E4E1DA] text-[#e93b30] hover:border-[#f46c6c] hover:bg-[#f49c9c]/15 transition cursor-pointer"
+                >
+                  <span>▶ Run Ali's 3D Demo Story</span>
+                </button>
+              `}
+            </div>
+          </header>
+
+          <!-- Main Route Viewport -->
+          <main class="flex-1 w-full px-4 sm:px-6 py-5 animate-page">
+            ${contentHtml}
+          </main>
+
+          <!-- Mandatory Footer Note -->
+          <footer class="w-full px-4 sm:px-6 py-4 border-t border-[#E4E1DA] bg-[#F7F6F3] text-center text-xs text-[#666666]">
+            Built for Sime Darby Property townships • Demo data. Confirm rules with official guidelines. • Section 70 of the Street, Drainage and Building Act 1974 (Act 133)
+          </footer>
+        </div>
+
+        <!-- Bottom Tab Bar under 768px -->
+        ${!isWelcomeOrSetup ? `
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FFFFFF] border-t border-[#E4E1DA] px-2 py-1 flex items-center justify-around">
+          ${navItems.map(item => {
+            const active = isActiveTab(item.route);
+            return `
+              <button
+                onclick="navigate('${item.route}')"
+                class="flex flex-col items-center justify-center py-1.5 px-3 text-xs font-semibold transition cursor-pointer border-b-[3px] ${
+                  active
+                    ? 'text-[#1A1A1A] border-[#e93b30]'
+                    : 'text-[#666666] border-transparent hover:text-[#1A1A1A]'
+                }"
+              >
+                <div class="p-1 ${active ? 'text-[#e93b30]' : 'text-[#666666]'}">
+                  ${item.icon}
+                </div>
+                <span class="mt-0.5 text-[11px]">${item.label}</span>
+              </button>
+            `;
+          }).join('')}
+        </nav>
+        ` : ''}
+      `;
+    }
+
+    function updateHeaderAndSidebarChecklistBadges() {
+      const stats = getDeduplicatedChecklist();
+      const hc = document.getElementById('header-zone-count');
+      if (hc) hc.textContent = String(state.selectedZones.length);
+      const sc = document.getElementById('sidebar-zone-count');
+      if (sc) sc.textContent = `${state.selectedZones.length} zones`;
+      const ic = document.getElementById('sidebar-item-count');
+      if (ic) ic.textContent = `${stats.checkedCount} of ${stats.totalCount} items done`;
+      const pb = document.getElementById('sidebar-progress-bar');
+      if (pb) pb.style.width = `${stats.percentage}%`;
+    }
+
+    /********************************************************************
+     * TASK 2: WELCOME & SETUP SCREENS
+     ********************************************************************/
+    function renderWelcomeScreen() {
+      return `
+        <div class="max-w-3xl mx-auto py-4 sm:py-10">
+          <!-- Hero Brand Header -->
+          <div class="text-center mb-8 sm:mb-10">
+            <div onclick="handleLogoTap()" class="inline-flex items-center justify-center w-16 h-16 rounded-[20px] bg-[#e93b30] text-white mb-4 cursor-pointer">
+              <svg class="w-9 h-9" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-10.5z"/>
+              </svg>
+            </div>
+            <div class="text-xs font-semibold uppercase tracking-wider text-[#666666] mb-1">
+              Built for Sime Darby Property townships
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-[#e93b30] pb-3 border-b-[3px] border-[#f48436] inline-block">
+              Welcome to HomeWise
+            </h1>
+            <p class="mt-4 text-base sm:text-lg text-[#666666] max-w-xl mx-auto">
+              Navigate our animated 3D home, pause on any side or floor level, and click any wall or zone with your cursor to see the exact renovation laws and requirements.
+            </p>
+          </div>
+
+          <!-- Two Large Mode Selection Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <!-- Card 1: Just exploring -->
+            <div
+              onclick="startExploreMode()"
+              class="bg-[#F7F6F3] rounded-[16px] p-6 sm:p-7 border border-[#E4E1DA] border-t-[3px] border-t-[#f48436] hover:bg-[#f49c9c]/15 hover:border-[#f46c6c] transition-all cursor-pointer flex flex-col justify-between group"
+            >
+              <div>
+                <div class="w-12 h-12 rounded-[14px] bg-[#FFFFFF] border border-[#E4E1DA] flex items-center justify-center text-[#e93b30] mb-5">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+                  </svg>
+                </div>
+                <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-[#FFFFFF] text-[#666666] border border-[#E4E1DA] mb-3">
+                  Quick Browse
+                </span>
+                <h2 class="text-2xl font-bold text-[#e93b30]">
+                  Just exploring
+                </h2>
+                <p class="mt-2 text-sm sm:text-base text-[#666666] leading-relaxed">
+                  Watch the 3D animated transitions between exterior angles and floor levels, then hover and select walls to check renovation laws.
+                </p>
+              </div>
+              <div class="mt-6 pt-4 border-t border-[#E4E1DA] flex items-center justify-between text-sm font-semibold text-[#e93b30]">
+                <span>Go to Home screen</span>
+                <span>→</span>
+              </div>
+            </div>
+
+            <!-- Card 2: I want to renovate -->
+            <div
+              onclick="startRenovateSetup()"
+              class="bg-[#F7F6F3] rounded-[16px] p-6 sm:p-7 border border-[#E4E1DA] border-t-[3px] border-t-[#f48436] hover:bg-[#f49c9c]/15 hover:border-[#f46c6c] transition-all cursor-pointer flex flex-col justify-between group"
+            >
+              <div>
+                <div class="w-12 h-12 rounded-[14px] bg-[#FFFFFF] border border-[#E4E1DA] flex items-center justify-center text-[#e93b30] mb-5 font-bold">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                  </svg>
+                </div>
+                <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-[#fbbc76]/25 text-[#1A1A1A] border border-[#E4E1DA] mb-3">
+                  Guided Planner
+                </span>
+                <h2 class="text-2xl font-bold text-[#e93b30]">
+                  I want to renovate
+                </h2>
+                <p class="mt-2 text-sm sm:text-base text-[#666666] leading-relaxed">
+                  Select your Sime Darby Property township and unit type to track your custom PBT & management checklist.
+                </p>
+              </div>
+              <div class="mt-6 pt-4 border-t border-[#E4E1DA] flex items-center justify-between text-sm font-semibold text-[#e93b30]">
+                <span>Set up my home</span>
+                <span>→</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Statutory Context Banner -->
+          <div class="mt-8 bg-[#F7F6F3] rounded-[16px] p-5 border border-[#E4E1DA] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="flex items-start gap-3.5">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FBEAE9] text-[#B3261E] border border-[#B3261E]/30 text-xs font-bold shrink-0 mt-0.5">
+                <span class="w-2 h-2 rounded-full bg-[#B3261E]"></span>
+                Needs PBT + engineer
+              </span>
+              <p class="text-xs sm:text-sm text-[#666666] leading-relaxed">
+                <strong class="text-[#1A1A1A]">Why HomeWise?</strong> 40% to 60%+ of homeowners start renovating without approval because rules feel complex. Under <strong class="text-[#1A1A1A]">Section 70 of the Street, Drainage and Building Act 1974 (Act 133)</strong>, structural works require written PBT approval.
+              </p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSetupScreen() {
+      const projects = ['Bandar Bukit Raja', 'Elmina', 'Bukit Jelutong'];
+      const units = ['Terrace house', 'Condominium'];
+
+      return `
+        <div class="max-w-xl mx-auto py-6 sm:py-10">
+          <button
+            onclick="navigate('/welcome')"
+            class="inline-flex items-center gap-2 text-sm font-semibold text-[#e93b30] hover:underline mb-6 cursor-pointer"
+          >
+            <span>← Back to Welcome</span>
+          </button>
+
+          <div class="bg-[#F7F6F3] rounded-[16px] p-6 sm:p-8 border border-[#E4E1DA] border-t-[3px] border-t-[#f48436]">
+            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-[#fbbc76]/25 text-[#1A1A1A] border border-[#E4E1DA] mb-3">
+              Renovation Setup
+            </span>
+            <h1 class="text-2xl sm:text-3xl font-bold text-[#e93b30] pb-2 border-b-[3px] border-[#f48436]">
+              Tell us about your property
+            </h1>
+            <p class="mt-3 text-sm sm:text-base text-[#666666]">
+              We'll tailor your renovation workspace for your Sime Darby Property township.
+            </p>
+
+            <form onsubmit="completeSetup(event)" class="mt-6 space-y-5">
+              <div>
+                <label for="setup-project" class="block text-sm font-semibold text-[#1A1A1A] mb-2">
+                  1. Select Township Project (Mock)
+                </label>
+                <select
+                  id="setup-project"
+                  class="w-full bg-[#FFFFFF] border border-[#E4E1DA] focus:border-[#e93b30] rounded-[16px] px-4 py-3.5 text-[#1A1A1A] font-medium outline-none transition"
+                >
+                  ${projects.map(p => `<option value="${p}" ${state.project === p ? 'selected' : ''}>${p}</option>`).join('')}
+                </select>
+              </div>
+
+              <div>
+                <label for="setup-unit" class="block text-sm font-semibold text-[#1A1A1A] mb-2">
+                  2. Select Unit Type
+                </label>
+                <select
+                  id="setup-unit"
+                  class="w-full bg-[#FFFFFF] border border-[#E4E1DA] focus:border-[#e93b30] rounded-[16px] px-4 py-3.5 text-[#1A1A1A] font-medium outline-none transition"
+                >
+                  ${units.map(u => `<option value="${u}" ${state.unitType === u ? 'selected' : ''}>${u}</option>`).join('')}
+                </select>
+              </div>
+
+              <div class="pt-3 flex flex-col sm:flex-row gap-3">
+                <button
+                  type="submit"
+                  class="w-full py-4 px-6 rounded-[16px] bg-[#C7281E] hover:bg-[#A82018] text-white font-bold text-base transition cursor-pointer"
+                >
+                  Continue to Home →
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+    }
+
+    /********************************************************************
+     * TASK 3: HOME SCREEN
+     ********************************************************************/
+    function renderHomeScreen() {
+      const checklistStats = getDeduplicatedChecklist();
+
+      return `
+        <div class="space-y-6">
+          ${state.mode === 'explore' ? `
+            <div class="bg-[#F7F6F3] rounded-[16px] p-6 sm:p-8 border border-[#E4E1DA] border-t-[3px] border-t-[#f48436]">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[#fbbc76]/25 text-[#1A1A1A] border border-[#E4E1DA]">
+                  Just Exploring Mode
+                </span>
+                <span class="text-xs text-[#666666]">Built for Sime Darby Property townships</span>
+              </div>
+              <h1 class="text-2xl sm:text-3xl font-bold text-[#e93b30] pb-2 border-b-[3px] border-[#f48436] inline-block">
+                Explore Renovation Rules with 3D Animation
+              </h1>
+              <p class="mt-3 text-sm sm:text-base text-[#666666] max-w-2xl leading-relaxed">
+                Switch between views to watch the 3D house animate to a new side or floor level and pause. When paused, move your mouse cursor over any wall, roof, or room and click it to see its law and rule state:
+                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#EAF5EF] text-[#2F8F5B] font-semibold text-xs mx-0.5"><span class="w-2 h-2 rounded-full bg-[#2F8F5B]"></span>Allowed</span>,
+                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#FDF4E7] text-[#B7791F] font-semibold text-xs mx-0.5"><span class="w-2 h-2 rounded-full bg-[#B7791F]"></span>Needs approval</span>, or
+                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#FBEAE9] text-[#B3261E] font-semibold text-xs mx-0.5"><span class="w-2 h-2 rounded-full bg-[#B3261E]"></span>Needs PBT + engineer</span>.
+              </p>
+
+              <div class="mt-6 flex flex-wrap gap-3.5">
+                <button
+                  onclick="navigate('/explorer')"
+                  class="px-6 py-3.5 rounded-[16px] bg-[#C7281E] hover:bg-[#A82018] text-white font-bold text-sm sm:text-base transition cursor-pointer"
+                >
+                  Open 3D Animation Explorer →
+                </button>
+                <button
+                  onclick="navigate('/assistant')"
+                  class="px-6 py-3.5 rounded-[16px] border border-[#E4E1DA] bg-[#FFFFFF] text-[#1A1A1A] font-semibold text-sm sm:text-base hover:border-[#f46c6c] hover:bg-[#f49c9c]/15 transition cursor-pointer"
+                >
+                  Ask the assistant
+                </button>
+              </div>
+            </div>
+          ` : `
+            <div class="bg-[#F7F6F3] rounded-[16px] p-6 sm:p-8 border border-[#E4E1DA] border-t-[3px] border-t-[#f48436]">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[#fbbc76]/25 text-[#1A1A1A] border border-[#E4E1DA]">
+                    Renovate Mode
+                  </span>
+                  <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[#FFFFFF] text-[#1A1A1A] border border-[#E4E1DA]">
+                    📍 ${state.project}
+                  </span>
+                  <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[#FFFFFF] text-[#666666] border border-[#E4E1DA]">
+                    🏠 ${state.unitType}
+                  </span>
+                </div>
+                <button onclick="navigate('/setup')" class="text-xs font-semibold text-[#e93b30] underline cursor-pointer">
+                  Change unit
+                </button>
+              </div>
+
+              <h1 class="text-2xl sm:text-3xl font-bold text-[#e93b30] pb-2 border-b-[3px] border-[#f48436] inline-block">
+                Your Renovation Plan & Compliance Progress
+              </h1>
+              <p class="mt-3 text-sm sm:text-base text-[#666666]">
+                ${state.selectedZones.length === 0
+                  ? 'You have not added any house zones yet. Open the 3D Home to select the areas you plan to renovate.'
+                  : `Tracking ${state.selectedZones.length} house zone(s) with ${checklistStats.totalCount} deduplicated compliance requirements.`}
+              </p>
+
+              <!-- Progress Bar -->
+              <div class="mt-5 bg-[#FFFFFF] rounded-[16px] p-4 border border-[#E4E1DA]">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-[#666666]">Checklist readiness (${checklistStats.checkedCount}/${checklistStats.totalCount} completed)</span>
+                  <span class="text-sm font-bold text-[#1A1A1A]">${checklistStats.percentage}%</span>
+                </div>
+                <div class="w-full h-3 bg-[#F7F6F3] rounded-full overflow-hidden border border-[#E4E1DA]">
+                  <div class="h-full bg-[#C7281E] transition-all duration-300 rounded-full" style="width: ${checklistStats.percentage}%"></div>
+                </div>
+              </div>
+
+              <div class="mt-6 flex flex-wrap gap-3.5">
+                <button
+                  onclick="navigate('/explorer')"
+                  class="px-6 py-3.5 rounded-[16px] bg-[#C7281E] hover:bg-[#A82018] text-white font-bold text-sm sm:text-base transition cursor-pointer"
+                >
+                  Continue in 3D Animation →
+                </button>
+                <button
+                  onclick="navigate('/checklist')"
+                  class="px-6 py-3.5 rounded-[16px] border border-[#E4E1DA] bg-[#FFFFFF] text-[#1A1A1A] font-semibold text-sm sm:text-base hover:border-[#f46c6c] hover:bg-[#f49c9c]/15 transition cursor-pointer"
+                >
+                  View checklist (${checklistStats.totalCount})
+                </button>
+              </div>
+            </div>
+          `}
+
+          <!-- 3 Essential Renovation Tip Cards -->
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-xl font-bold text-[#e93b30] pb-1.5 border-b-[3px] border-[#f48436]">Key Renovation Rules & Tips</h2>
+              <span class="text-xs text-[#666666]">Tap a card to inspect in 3D</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              ${TIPS_DATA.map(tip => {
+                const badge = getComplianceBadge(tip.level);
+                return `
+                  <div
+                    onclick="navigate('/explorer', { zoneId: '${tip.zoneId}' })"
+                    class="bg-[#F7F6F3] rounded-[16px] p-5 border border-[#E4E1DA] hover:border-[#f46c6c] hover:bg-[#f49c9c]/10 transition cursor-pointer flex flex-col justify-between group"
+                  >
+                    <div>
+                      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${badge.bg} ${badge.text} ${badge.border} mb-3">
+                        <span class="w-2 h-2 rounded-full ${badge.dot}"></span>
+                        <span>${badge.label}</span>
+                      </span>
+                      <h3 class="text-lg font-bold text-[#1A1A1A]">
+                        ${tip.title}
+                      </h3>
+                      <p class="mt-2 text-sm text-[#666666] leading-relaxed">
+                        ${tip.summary}
+                      </p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-[#E4E1DA] flex items-center justify-between text-xs text-[#666666]">
+                      <span class="truncate pr-2">📜 ${tip.clause}</span>
+                      <span class="text-[#e93b30] font-semibold shrink-0">View 3D →</span>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /********************************************************************
+     * TASK 4: 3D ANIMATION VIEWER + INTERACTIVE WALL & PART SELECTION
+     *
+     * Actual uploaded video filenames:
+     * - Anim_CornerCross_GFloor.mp4         : Level 1 -> Level 2 cutaway
+     * - Anim_CornerCross_GFloor_reverse.mp4 : Level 2 -> Level 1 cutaway
+     * - Anim_Corner_FronttoSide.mp4         : Front -> Side garden
+     * - Anim_Corner_FronttoSide_reverse.mp4 : Side garden -> Front
+     * - Anim_Corner_SidetoBack.mp4          : Side garden -> Rear & back
+     * - image_bbd57e.png                    : 2D Floor Plan (Ground & First Floor)
+     ********************************************************************/
+    const VIEWS = [
+      {
+        id: 'front',
+        mode: 'perspective',
+        label: 'Front elevation (3D Animation)',
+        short: 'Front',
+        type: 'video',
+        defaultVideo: 'Anim_Corner_FronttoSide.mp4',
+        defaultPose: 'start',
+        replayVideo: 'Anim_Corner_FronttoSide_reverse.mp4',
+        fallbacks: ['Anim_Corner_FronttoSide.mp4', 'video_bfa09e.mp4', 'video_bf1616.mp4'],
+        w: 1920,
+        h: 1152,
+        tone: 'dark'
+      },
+      {
+        id: 'side',
+        mode: 'perspective',
+        label: 'Side terrace & garden (3D Animation)',
+        short: 'Side view',
+        type: 'video',
+        defaultVideo: 'Anim_Corner_FronttoSide.mp4',
+        defaultPose: 'end',
+        replayVideo: 'Anim_Corner_FronttoSide.mp4',
+        fallbacks: ['Anim_Corner_FronttoSide_reverse.mp4', 'Anim_Corner_SidetoBack.mp4', 'video_bfa09e.mp4'],
+        w: 1920,
+        h: 1152,
+        tone: 'dark'
+      },
+      {
+        id: 'rear',
+        mode: 'perspective',
+        label: 'Rear & side garden (3D Animation)',
+        short: 'Rear & back',
+        type: 'video',
+        defaultVideo: 'Anim_Corner_SidetoBack.mp4',
+        defaultPose: 'end',
+        replayVideo: 'Anim_Corner_SidetoBack.mp4',
+        fallbacks: ['Anim_Corner_SidetoBack.mp4', 'video_bf1616.mp4', 'video_bfa09e.mp4'],
+        w: 1920,
+        h: 1152,
+        tone: 'dark'
+      },
+      {
+        id: 'l1',
+        mode: 'levels',
+        label: 'Level 1 · Ground floor (3D Cutaway)',
+        short: 'Level 1',
+        type: 'video',
+        defaultVideo: 'Anim_CornerCross_GFloor.mp4',
+        defaultPose: 'start',
+        replayVideo: 'Anim_CornerCross_GFloor_reverse.mp4',
+        fallbacks: ['Anim_CornerCross_GFloor_reverse.mp4', 'Anim_CornerCross_GFloor.mp4', 'video_bb3ee8.mp4', 'video_bbcf0d.mp4'],
+        w: 1920,
+        h: 1184,
+        tone: 'dark'
+      },
+      {
+        id: 'l2',
+        mode: 'levels',
+        label: 'Level 2 · First floor (3D Cutaway)',
+        short: 'Level 2',
+        type: 'video',
+        defaultVideo: 'Anim_CornerCross_GFloor.mp4',
+        defaultPose: 'end',
+        replayVideo: 'Anim_CornerCross_GFloor.mp4',
+        fallbacks: ['Anim_CornerCross_GFloor.mp4', 'Anim_CornerCross_GFloor_reverse.mp4', 'video_bbcf0d.mp4', 'video_bb3ee8.mp4'],
+        w: 1920,
+        h: 1184,
+        tone: 'dark'
+      },
+      {
+        id: 'plan',
+        mode: 'plan',
+        label: 'Floor plan · Type C/E',
+        short: 'Plan',
+        type: 'image',
+        img: 'image_bbd57e.png',
+        w: 1170,
+        h: 1239,
+        tone: 'light'
+      }
+    ];
+
+    // Direct transition clips between paired views
+    const TRANSITION_VIDEOS = {
+      'l1->l2': 'Anim_CornerCross_GFloor.mp4',
+      'l2->l1': 'Anim_CornerCross_GFloor_reverse.mp4',
+      'front->side': 'Anim_Corner_FronttoSide.mp4',
+      'side->front': 'Anim_Corner_FronttoSide_reverse.mp4',
+      'side->rear': 'Anim_Corner_SidetoBack.mp4',
+      'front->rear': 'Anim_Corner_SidetoBack.mp4',
+      'rear->front': 'Anim_Corner_FronttoSide_reverse.mp4',
+      'rear->side': 'Anim_Corner_FronttoSide.mp4'
+    };
+
+    const VIEW_MODES = [
+      { id: 'perspective', label: 'Perspective (3D)', views: ['front', 'side', 'rear'] },
+      { id: 'levels', label: 'Levels (3D Cutaway)', views: ['l1', 'l2'] },
+      { id: 'plan', label: '2D Floor Plan', views: ['plan'] }
+    ];
+
+    // Draw order: later zones sit on top and win the tap where shapes touch.
+    const DRAW_ORDER = [
+      'exterior-wall',
+      'structural-wall',
+      'internal-wall',
+      'kitchen',
+      'bathroom',
+      'rear-extension',
+      'side-terrace',
+      'ac-ledge',
+      'car-porch',
+      'front-gate',
+      'roof-extension'
+    ];
+
+    // 3D-synced zone visibility & 2D Floorplan polygons.
+    // For 3D views (front, side, rear, l1, l2), exact perspective polygons are computed live
+    // by projecting the 3D wall/part faces through the active Three.js camera matrix.
+    const ZONE_SHAPES = {
+      'exterior-wall': {
+        front: ["3D"],
+        side:  ["3D"],
+        rear:  ["3D"],
+        l1:    ["3D"],
+        l2:    ["3D"],
+        plan:  ["13.8,41 15.2,41 15.2,72.8 13.8,72.8", "14,71.2 44.5,71.2 44.5,72.8 14,72.8", "61,71.2 92,71.2 92,73.5 61,73.5", "61,26 62.5,26 62.5,72 61,72"]
+      },
+      'structural-wall': {
+        front: ["3D"],
+        side:  ["3D"],
+        rear:  ["3D"],
+        l1:    ["3D"],
+        l2:    ["3D"],
+        plan:  ["35.2,52 44.5,52 44.5,64 35.2,64", "43.4,14.5 45,14.5 45,72.5 43.4,72.5", "29,40.2 44.5,40.2 44.5,41.8 29,41.8", "83.5,42 91.5,42 91.5,58 83.5,58", "90.5,21 92,21 92,73 90.5,73"]
+      },
+      'internal-wall': {
+        l1:    ["3D"],
+        l2:    ["3D"],
+        plan:  ["28.5,24 30.2,24 30.2,40.5 28.5,40.5", "75.8,26 77.4,26 77.4,40.5 75.8,40.5", "61.5,40.2 91,40.2 91,41.8 61.5,41.8", "61.5,51.5 80,51.5 80,53 61.5,53"]
+      },
+      'kitchen': {
+        l1:    ["3D"],
+        plan:  ["14.5,20.5 28.8,20.5 28.8,40.5 14.5,40.5"]
+      },
+      'bathroom': {
+        l1:    ["3D"],
+        l2:    ["3D"],
+        plan:  ["24.8,14.5 37,14.5 37,24.2 24.8,24.2", "68,14.5 76.2,14.5 76.2,26 68,26", "76.4,14.5 84.5,14.5 84.5,26 76.4,26", "83,59 91.2,59 91.2,72.5 83,72.5"]
+      },
+      'rear-extension': {
+        side:  ["3D"],
+        rear:  ["3D"],
+        l1:    ["3D"],
+        plan:  ["14,14.2 24.6,14.2 24.6,20.5 14,20.5"]
+      },
+      'side-terrace': {
+        front: ["3D"],
+        side:  ["3D"],
+        rear:  ["3D"],
+        l1:    ["3D"],
+        l2:    ["3D"],
+        plan:  ["8.4,38.5 14,38.5 14,51.5 8.4,51.5"]
+      },
+      'ac-ledge': {
+        front: ["3D"],
+        side:  ["3D"],
+        rear:  ["3D"],
+        l2:    ["3D"],
+        plan:  ["57.4,40.5 61.2,40.5 61.2,51.5 57.4,51.5", "79.5,72.5 91.5,72.5 91.5,75.8 79.5,75.8"]
+      },
+      'car-porch': {
+        front: ["3D"],
+        side:  ["3D"],
+        rear:  ["3D"],
+        l1:    ["3D"],
+        l2:    ["3D"],
+        plan:  ["13.8,73 44.5,73 44.5,86 13.8,86"]
+      },
+      'front-gate': {
+        front: ["3D"],
+        side:  ["3D"],
+        rear:  ["3D"],
+        l1:    ["3D"],
+        l2:    ["3D"],
+        plan:  ["13,86.2 45,86.2 45,89.5 13,89.5", "4.5,14.2 6.2,14.2 6.2,89.5 4.5,89.5"]
+      },
+      'roof-extension': {
+        front: ["3D"],
+        side:  ["3D"],
+        rear:  ["3D"],
+        l1:    ["3D"],
+        l2:    ["3D"]
+      }
+    };
+    const ZONE_EXTRAS = {
+      'front-gate': {
+        onUnit: "Gate, dwarf wall and letterbox pillar at the front of the car porch. On a corner lot the fence also runs along the side garden.",
+        ideas: ["Swap to a trackless folding gate", "Add a taller privacy screen on the side fence", "Repaint the dwarf wall in an approved colour"]
+      },
+      'exterior-wall': {
+        onUnit: "Front façade windows and white louvers, plus the side wall that faces the garden on this corner lot.",
+        ideas: ["Add window tint or film", "Repaint in a township-approved colour", "Fit slim grilles inside the window frame"]
+      },
+      'internal-wall': {
+        onUnit: "Kitchen and guest bedroom wall on Level 1. Bedroom 2 and 3 partition and the family area wall on Level 2.",
+        ideas: ["Open the kitchen with a glass sliding partition", "Add a breakfast counter in place of a half wall", "Build a full-height wardrobe wall"]
+      },
+      'structural-wall': {
+        onUnit: "Staircase core, party wall, corner columns and the load-bearing walls between bedrooms and family area. Treat all of these as structural until an engineer says otherwise.",
+        ideas: ["Keep the wall and add built-in shelving", "Ask an engineer if a beam can open the living and dining area", "Strengthen the wall if you plan a heavier roof or extension"]
+      },
+      'kitchen': {
+        onUnit: "Wet and dry kitchen along the left side of Level 1, with the island next to the dining area.",
+        ideas: ["Replace cabinets with aluminium carcasses", "Retile the floor and backsplash", "Move the sink with a licensed plumber"]
+      },
+      'roof-extension': {
+        onUnit: "Main pitched roof and the flat roof slab at the rear. An extra floor or roof alteration on a two-storey terrace is a major building addition.",
+        ideas: ["Replace roof tiles like for like", "Add skylight or solar panels with an engineer's check", "Extend the roof over the rear yard"]
+      },
+      'rear-extension': {
+        onUnit: "Rear yard and kitchen wall at the back of Level 1. This is where most owners extend the wet kitchen.",
+        ideas: ["Extend the wet kitchen by 5 ft", "Roof over the rear yard as a service area", "Add a utility room behind the kitchen"]
+      },
+      'car-porch': {
+        onUnit: "Car porch canopy and Terrace 1 in front of the foyer. The corner lot gives you room for two cars.",
+        ideas: ["Add a retractable awning", "Fit a lightweight polycarbonate canopy", "Install an EV charger point"]
+      },
+      'side-terrace': {
+        onUnit: "Terrace 2 and the outdoor patio deck with umbrella on the open garden side of this corner unit.",
+        ideas: ["Add a pergola over the deck", "Lay new decking or pavers", "Plant a privacy hedge along the boundary"]
+      },
+      'bathroom': {
+        onUnit: "Bath 1 on Level 1, Bath 2 and 3 on Level 2, and the master bath above the foyer.",
+        ideas: ["Retile walls and floor", "Replace sanitary ware and shower set", "Redo waterproofing with a licensed contractor"]
+      },
+      'ac-ledge': {
+        onUnit: "A/C 1 at the front of the master bedroom and A/C 2 on the side wall next to the family area.",
+        ideas: ["Add a split unit for Bedroom 2 or 3", "Move an outdoor unit onto the ledge", "Hide the units behind a ventilated screen"]
+      }
+    };
+
+    function viewById(id) { return VIEWS.find(v => v.id === id) || VIEWS[2]; }
+    function viewsForZone(zoneId) { return VIEWS.filter(v => ZONE_SHAPES[zoneId] && ZONE_SHAPES[zoneId][v.id]); }
+    function zonesInView(viewId) { return DRAW_ORDER.filter(z => ZONE_SHAPES[z] && ZONE_SHAPES[z][viewId]); }
+
+    function pickBestViewForZone(zoneId) {
+      if (ZONE_SHAPES[zoneId] && ZONE_SHAPES[zoneId][state.viewId]) return state.viewId;
+      const list = viewsForZone(zoneId);
+      if (!list.length) return state.viewId;
+      const curMode = viewById(state.viewId).mode;
+      const pick = list.find(v => v.mode === curMode) || list[0];
+      return pick.id;
+    }
+
+    function ensureZoneVisible(zoneId) {
+      const pickId = pickBestViewForZone(zoneId);
+      if (pickId !== state.viewId) {
+        state.viewId = pickId;
+      }
+    }
+
+    function polyBox(pts) {
+      const arr = pts.trim().split(/\s+/).map(p => p.split(',').map(Number));
+      const xs = arr.map(a => a[0]), ys = arr.map(a => a[1]);
+      const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+      // Compute true polygon centroid for accurate pin placement on angled 3D walls
+      let cx = (x0 + x1) / 2;
+      let cy = (y0 + y1) / 2;
+      if (arr.length >= 3) {
+        let signedArea = 0, sumX = 0, sumY = 0;
+        for (let i = 0; i < arr.length; i++) {
+          const [xA, yA] = arr[i];
+          const [xB, yB] = arr[(i + 1) % arr.length];
+          const cross = xA * yB - xB * yA;
+          signedArea += cross;
+          sumX += (xA + xB) * cross;
+          sumY += (yA + yB) * cross;
+        }
+        if (Math.abs(signedArea) > 1e-3) {
+          cx = sumX / (3 * signedArea);
+          cy = sumY / (3 * signedArea);
+        }
+      }
+      return { cx, cy, area: (x1 - x0) * (y1 - y0) };
+    }
+
+    function getPolygonsForZoneAndView(zoneId, viewId) {
+      if (viewId === 'plan') {
+        return (ZONE_SHAPES[zoneId] && ZONE_SHAPES[zoneId].plan) || [];
+      }
+      return getProjected3DPolygons(zoneId, viewId);
+    }
+
+    function zoneAnchor(zoneId, viewId) {
+      const polys = getPolygonsForZoneAndView(zoneId, viewId);
+      let best = null;
+      polys.forEach(p => { const b = polyBox(p); if (!best || b.area > best.area) best = b; });
+      return best;
+    }
+
+    function renderExplorerScreen() {
+      const view = viewById(state.viewId);
+      return `
+        <div class="space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h1 class="text-2xl font-bold text-[#e93b30] pb-1.5 border-b-[3px] border-[#f48436] inline-block">
+                3D Home Animation & Law Explorer
+              </h1>
+              <p class="text-xs text-[#666666] mt-1">
+                Switch sides or floor levels to play the 3D transition. When paused, hover your mouse cursor over any wall or zone and click to see the law.
+              </p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button
+                onclick="replayCurrentViewAnimation()"
+                class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[14px] text-xs font-semibold bg-[#F7F6F3] hover:bg-[#fbbc76]/25 text-[#1A1A1A] border border-[#E4E1DA] hover:border-[#e93b30] transition cursor-pointer"
+                title="Replay camera transition animation for this view"
+              >
+                <svg class="w-4 h-4 text-[#e93b30]" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>
+                <span>Play camera animation</span>
+              </button>
+              <label
+                class="inline-flex items-center gap-1.5 px-3 py-2 rounded-[14px] text-xs font-semibold bg-[#FFFFFF] hover:bg-[#F7F6F3] text-[#666666] hover:text-[#1A1A1A] border border-[#E4E1DA] transition cursor-pointer"
+                title="Optional: Load your MP4 files directly if browser blocks local file paths"
+              >
+                <span>📁 Load MP4s</span>
+                <input type="file" accept="video/mp4,image/*" multiple class="hidden" onchange="handleCustomVideoFiles(event)" />
+              </label>
+            </div>
+          </div>
+
+          <!-- Top Controls & Rule Legend -->
+          <div id="explorer-top-controls">${renderExplorerTopControls()}</div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            <!-- Left Column: Persistent 3D Animation Stage + Interactive SVG Overlay -->
+            <div class="lg:col-span-7 min-w-0 bg-[#F7F6F3] rounded-[16px] border border-[#E4E1DA] overflow-hidden shadow-xs">
+              <div id="vstage" class="relative select-none bg-[#1c2229] w-full overflow-hidden" style="aspect-ratio:${view.w}/${view.h}">
+                <!-- Real-Time 3D Animated Architectural House Canvas (always renders smoothly and guarantees animation even if MP4 files are blocked by sandbox) -->
+                <canvas
+                  id="house-3d-canvas"
+                  class="absolute inset-0 w-full h-full block ${view.type === 'video' ? '' : 'hidden'}"
+                ></canvas>
+
+                <!-- 3D Animation Video Element (layers seamlessly on top when MP4 file loads) -->
+                <video
+                  id="house-video"
+                  muted
+                  playsinline
+                  preload="auto"
+                  class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-200 ${view.type === 'video' ? '' : 'hidden'}"
+                ></video>
+
+                <!-- 2D Floorplan Drawing (rendered when Plan mode is selected) -->
+                <div
+                  id="house-plan-wrap"
+                  class="absolute inset-0 w-full h-full bg-[#FAF8F5] ${view.type === 'image' ? '' : 'hidden'}"
+                >
+                  ${renderFloorPlanSVG()}
+                  <img
+                    id="house-plan-img"
+                    src="image_bbd57e.png"
+                    alt="Floor plan Type C/E"
+                    draggable="false"
+                    onload="this.style.opacity='1'"
+                    onerror="this.style.opacity='0'"
+                    style="opacity:0"
+                    class="absolute inset-0 w-full h-full object-contain transition-opacity duration-200"
+                  />
+                </div>
+
+                <!-- Interactive Wall/Part SVG Overlay + Pins + Navigation Controls -->
+                <div id="vstage-overlay" class="absolute inset-0 w-full h-full">
+                  ${renderExplorerStageOverlay()}
+                </div>
+              </div>
+
+              <!-- View Switcher Strip (Clicking any view animates the 3D camera/video and pauses) -->
+              <div id="explorer-thumbs" class="grid grid-cols-6 gap-1.5 sm:gap-2 p-2.5 bg-[#FFFFFF] border-t border-[#E4E1DA]">
+                ${renderExplorerThumbnails()}
+              </div>
+
+              <!-- Unit Specification Bar -->
+              <div class="px-4 py-3 bg-[#F7F6F3] border-t border-[#E4E1DA]">
+                <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-[#666666]">
+                  <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <span class="font-bold text-[#1A1A1A]">Type C/E · Corner / End Lot</span>
+                    <span>1,969 sq.ft</span>
+                    <span>22′ × 70′</span>
+                    <span>2 floors • 4 rooms • 4 baths</span>
+                  </div>
+                  <span class="text-[11px] font-medium text-[#e93b30]">🖱️ Hover & click walls when paused</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column: Selected Part Law & Requirements Details Panel -->
+            <div id="explorer-detail-panel" class="lg:col-span-5 min-w-0">
+              ${renderExplorerDetailPanel()}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderExplorerTopControls() {
+      const activeZone = getZone(state.activeZoneId) || ZONES_DATA[0];
+      const view = viewById(state.viewId);
+
+      return `
+        <div class="space-y-3">
+          <!-- Legend + Show All Zones Toggle -->
+          <div class="bg-[#F7F6F3] rounded-[16px] p-4 border border-[#E4E1DA] flex flex-wrap items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center gap-2.5 text-xs sm:text-sm font-medium">
+              <span class="text-[#666666] font-semibold mr-1">Law & Rule States:</span>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#EAF5EF] text-[#2F8F5B] border border-[#2F8F5B]/30 text-xs font-semibold">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#2F8F5B]"></span><span>Allowed</span>
+              </span>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FDF4E7] text-[#B7791F] border border-[#B7791F]/30 text-xs font-semibold">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#B7791F]"></span><span>Needs approval</span>
+              </span>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FBEAE9] text-[#B3261E] border border-[#B3261E]/30 text-xs font-semibold">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#B3261E]"></span><span>Needs PBT + engineer</span>
+              </span>
+            </div>
+            <button onclick="toggleShowAllColors()" class="px-3.5 py-2 rounded-[14px] text-xs sm:text-sm font-semibold border transition cursor-pointer ${
+              state.showAllColors ? 'bg-[#C7281E] text-white border-[#C7281E]' : 'bg-[#FFFFFF] text-[#1A1A1A] border-[#E4E1DA] hover:border-[#f46c6c]'
+            }">Highlight all parts: ${state.showAllColors ? 'ON' : 'OFF'}</button>
+          </div>
+
+          <!-- Mode Tabs (Perspective 3D | Levels 3D | 2D Floor Plan) -->
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <div class="flex items-center gap-2 flex-wrap">
+              <div class="inline-flex p-1 rounded-full bg-[#F7F6F3] border border-[#E4E1DA]" role="tablist" aria-label="Viewer mode">
+                ${VIEW_MODES.map(m => `
+                  <button role="tab" aria-selected="${m.id === view.mode}" onclick="setMode('${m.id}')"
+                    class="px-4 py-2 rounded-full text-xs sm:text-sm font-semibold cursor-pointer transition ${m.id === view.mode ? 'bg-[#C7281E] text-white' : 'text-[#666666] hover:text-[#1A1A1A]'}">${m.label}</button>`).join('')}
+              </div>
+              <span class="text-xs font-medium text-[#666666]">${view.label}</span>
+            </div>
+            <div class="text-xs font-semibold ${state.isVideoPlaying ? 'text-[#e93b30]' : 'text-[#2F8F5B]'} flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full ${state.isVideoPlaying ? 'bg-[#e93b30] animate-ping' : 'bg-[#2F8F5B]'}"></span>
+              <span>${state.isVideoPlaying ? 'Animating camera position...' : (view.type === 'video' ? 'Animation paused — Hover & click any wall/part' : 'Floor plan ready — Click any zone')}</span>
+            </div>
+          </div>
+
+          <!-- Quick Zone Selector Pills -->
+          <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+            ${ZONES_DATA.map(z => {
+              const b = getComplianceBadge(z.level);
+              const selected = z.id === activeZone.id;
+              const here = !!(ZONE_SHAPES[z.id] && ZONE_SHAPES[z.id][view.id]);
+              return `
+                <button onclick="selectZoneInExplorer('${z.id}')" title="${here ? 'Click to highlight this part' : 'Click to animate camera to this part'}"
+                  class="shrink-0 inline-flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-semibold border transition cursor-pointer ${
+                    selected ? 'bg-[#fbbc76]/25 text-[#1A1A1A] border-[#e93b30]'
+                             : 'bg-[#F7F6F3] text-[#666666] border-[#E4E1DA] hover:text-[#1A1A1A] hover:bg-[#f49c9c]/15'} ${here ? '' : 'opacity-65'}">
+                  <span class="w-2.5 h-2.5 rounded-full" style="background:${b.hex}"></span>
+                  <span>${z.name}</span>
+                </button>`;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderExplorerStageOverlay() {
+      const activeZone = getZone(state.activeZoneId) || ZONES_DATA[0];
+      const view = viewById(state.viewId);
+      const mode = VIEW_MODES.find(m => m.id === view.mode);
+      const inView = zonesInView(view.id);
+
+      const polysHtml = inView.map(zid => {
+        const z = getZone(zid);
+        const b = getComplianceBadge(z.level);
+        const isHovered = state.hoveredZoneId === zid;
+        const cls = ['zp', state.showAllColors ? 'all' : '', zid === activeZone.id ? 'active' : '', isHovered ? 'hovered' : ''].join(' ');
+        const polys = getPolygonsForZoneAndView(zid, view.id);
+        return polys.map(pts => `
+          <polygon class="${cls}" data-zone="${zid}" points="${pts}" style="--c:${b.hex}" tabindex="0" role="button"
+            aria-label="${z.name}, ${b.label}"
+            onclick="selectZoneInExplorer('${zid}')"
+            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectZoneInExplorer('${zid}')}"
+            onmousemove="zoneTip(event,'${zid}')" onmouseleave="hideZoneTip()"></polygon>`).join('');
+      }).join('');
+
+      const dotsHtml = inView.filter(zid => state.showAllColors || zid === activeZone.id).map(zid => {
+        const a = zoneAnchor(zid, view.id);
+        if (!a) return '';
+        const z = getZone(zid);
+        const b = getComplianceBadge(z.level);
+        const isActive = zid === activeZone.id;
+        return `
+          <div class="vdot ${isActive ? 'vdot-active' : ''}" style="left:${a.cx}%;top:${a.cy}%;--c:${b.hex}">
+            <span class="vdot-pt"></span>
+            ${isActive ? `<span class="vdot-label">${z.name} · ${b.label}</span>` : ''}
+          </div>`;
+      }).join('');
+
+      const subChips = mode.views.length > 1 ? `
+        <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1 p-1 rounded-full bg-black/65 backdrop-blur-sm z-20">
+          ${mode.views.map(id => {
+            const v = viewById(id);
+            const active = id === view.id;
+            return `<button onclick="setView('${id}')" class="px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold cursor-pointer transition flex items-center gap-1 ${active ? 'bg-white text-[#1A1A1A]' : 'text-white/85 hover:text-white'}">
+              ${!active ? '<span class="text-[#fbbc76] text-[10px]">▶</span>' : ''}
+              <span>${v.short}</span>
+            </button>`;
+          }).join('')}
+        </div>` : '';
+
+      const arrows = mode.views.length > 1 ? `
+        <button onclick="stepView(-1)" aria-label="Previous view" class="vnav left-3">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <button onclick="stepView(1)" aria-label="Next view" class="vnav right-3">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </button>` : '';
+
+      return `
+        <svg class="absolute inset-0 w-full h-full tone-${view.tone} ${state.isVideoPlaying ? 'pointer-events-none opacity-0' : 'opacity-100'} transition-opacity duration-200" viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="Tappable renovation zones">
+          ${polysHtml}
+        </svg>
+        <div class="absolute inset-0 pointer-events-none ${state.isVideoPlaying ? 'opacity-0' : 'opacity-100'} transition-opacity duration-200">${dotsHtml}</div>
+        <div class="absolute top-3 left-3 px-3 py-1.5 rounded-full bg-black/65 text-white text-[11px] font-semibold backdrop-blur-sm pointer-events-none flex items-center gap-2 z-20">
+          <span class="w-2 h-2 rounded-full ${state.isVideoPlaying ? 'bg-[#fbbc76] animate-ping' : 'bg-[#2F8F5B]'}"></span>
+          <span>${mode.views.length > 1 ? mode.label + ' · ' + view.short : view.label} ${state.isVideoPlaying ? '(Playing...)' : '(Paused — Select a part)'}</span>
+        </div>
+        ${view.type === 'video' ? `
+          <button
+            onclick="replayCurrentViewAnimation()"
+            class="absolute top-3 right-3 px-3 py-1.5 rounded-full bg-black/65 hover:bg-black/85 text-white text-[11px] font-semibold backdrop-blur-sm flex items-center gap-1.5 cursor-pointer transition z-20"
+          >
+            <span class="text-[#fbbc76]">▶</span>
+            <span>Replay move</span>
+          </button>
+        ` : ''}
+        ${arrows}
+        ${subChips}
+        <div id="vtip" class="vtip" style="opacity:0"></div>
+      `;
+    }
+
+    function renderExplorerThumbnails() {
+      const curView = viewById(state.viewId);
+      return VIEWS.map(v => {
+        const active = v.id === curView.id;
+        const badgeText = v.type === 'video' ? (v.mode === 'levels' ? '3D Cutaway' : '3D Video') : '2D Drawing';
+        return `
+          <button
+            onclick="setView('${v.id}')"
+            aria-label="${v.label}"
+            class="min-w-0 rounded-[12px] p-2 border-2 text-left cursor-pointer transition flex flex-col justify-between ${
+              active
+                ? 'border-[#e93b30] bg-[#fbbc76]/20'
+                : 'border-[#E4E1DA] bg-[#F7F6F3] hover:border-[#f46c6c]'
+            }"
+          >
+            <div class="flex items-center justify-between gap-1 w-full mb-1">
+              <span class="text-[11px] sm:text-xs font-bold truncate text-[#1A1A1A]">${v.short}</span>
+              ${v.type === 'video'
+                ? `<span class="w-4 h-4 rounded-full ${active ? 'bg-[#e93b30] text-white' : 'bg-[#f49c9c]/30 text-[#e93b30]'} flex items-center justify-center text-[9px] shrink-0">▶</span>`
+                : `<span class="text-[9px] font-bold px-1 rounded bg-[#E4E1DA] text-[#1A1A1A]">2D</span>`
+              }
+            </div>
+            <div class="text-[10px] text-[#666666] truncate">${badgeText}</div>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function renderExplorerDetailPanel() {
+      const activeZone = getZone(state.activeZoneId) || ZONES_DATA[0];
+      const badge = getComplianceBadge(activeZone.level);
+      const isAdded = state.selectedZones.includes(activeZone.id);
+      const extras = ZONE_EXTRAS[activeZone.id] || { ideas: [], onUnit: '' };
+      const view = viewById(state.viewId);
+      const isStatutory = activeZone.clause.includes('Act 133');
+
+      return `
+        <div class="bg-[#F7F6F3] rounded-[16px] p-5 sm:p-6 border border-[#E4E1DA] border-t-[3px] border-t-[#f48436]">
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${badge.bg} ${badge.text} ${badge.border}">
+              <span class="w-2.5 h-2.5 rounded-full ${badge.dot}"></span><span>${badge.label}</span>
+            </span>
+            <span class="text-xs font-semibold text-[#666666]">Selected Part Law</span>
+          </div>
+
+          <h2 class="text-2xl font-bold text-[#e93b30]">${activeZone.name}</h2>
+
+          <!-- Prominent Law & Statutory Clause Card -->
+          <div class="mt-3.5 rounded-[14px] p-4 border ${
+            activeZone.level === 'red'
+              ? 'bg-[#FBEAE9] border-[#B3261E]/40'
+              : 'bg-[#FFFFFF] border-[#E4E1DA]'
+          }">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-[11px] uppercase tracking-wider font-bold ${activeZone.level === 'red' ? 'text-[#B3261E]' : 'text-[#e93b30]'}">
+                Applicable Law &amp; Guideline
+              </span>
+              ${isStatutory ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#B3261E] text-white">STATUTORY LAW</span>` : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#fbbc76]/40 text-[#1A1A1A]">TOWNSHIP RULE</span>`}
+            </div>
+            <div class="text-sm font-bold text-[#1A1A1A] mt-1.5">📜 ${activeZone.clause}</div>
+            <p class="mt-2 text-xs sm:text-sm text-[#1A1A1A] leading-relaxed">${activeZone.explanation}</p>
+          </div>
+
+          ${extras.onUnit ? `
+            <div class="mt-3.5 bg-[#FFFFFF] rounded-[12px] p-3 border border-[#E4E1DA] text-xs sm:text-sm text-[#666666] leading-relaxed">
+              <strong class="text-[#1A1A1A]">Where on this house:</strong> ${extras.onUnit}
+            </div>` : ''}
+
+          <div class="mt-3.5 flex flex-wrap items-center gap-1.5">
+            <span class="text-[11px] uppercase tracking-wider font-semibold text-[#666666] mr-1">Camera angles for this part:</span>
+            ${viewsForZone(activeZone.id).map(v => `
+              <button onclick="setView('${v.id}')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold border cursor-pointer transition flex items-center gap-1 ${v.id === view.id ? 'bg-[#fbbc76]/25 text-[#1A1A1A] border-[#e93b30]' : 'bg-[#FFFFFF] text-[#666666] border-[#E4E1DA] hover:border-[#f46c6c]'}">
+                ${v.type === 'video' ? '<span class="text-[#e93b30] text-[9px]">▶</span>' : ''}
+                <span>${v.short}</span>
+              </button>`).join('')}
+          </div>
+
+          <div class="mt-5">
+            ${!isAdded ? `
+              <button onclick="toggleZoneInChecklist('${activeZone.id}')" class="w-full py-3.5 px-5 rounded-[16px] bg-[#C7281E] hover:bg-[#A82018] text-white font-bold text-sm sm:text-base transition cursor-pointer">
+                + Add to checklist (${activeZone.requirements.length} items)
+              </button>
+            ` : `
+              <div class="flex items-center gap-2.5">
+                <button onclick="navigate('/checklist')" class="flex-1 py-3.5 px-4 rounded-[16px] bg-[#C7281E] hover:bg-[#A82018] text-white font-bold text-sm sm:text-base cursor-pointer text-center transition">✓ Added to checklist (View)</button>
+                <button onclick="toggleZoneInChecklist('${activeZone.id}')" class="py-3.5 px-4 rounded-[16px] bg-[#FFFFFF] border border-[#E4E1DA] text-[#666666] hover:text-[#1A1A1A] hover:border-[#f46c6c] text-sm font-semibold transition cursor-pointer">Remove</button>
+              </div>
+            `}
+          </div>
+
+          <div class="mt-6 pt-5 border-t border-[#E4E1DA]">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-[#1A1A1A] mb-3">Required Approvals &amp; Conditions (${activeZone.requirements.length})</h3>
+            <ul class="space-y-2">
+              ${activeZone.requirements.map(req => `
+                <li class="flex items-start gap-2.5 bg-[#FFFFFF] p-3 rounded-[12px] border border-[#E4E1DA] text-xs sm:text-sm">
+                  <span class="px-2 py-0.5 rounded bg-[#fbbc76]/25 text-[#1A1A1A] border border-[#E4E1DA] font-semibold text-[11px] shrink-0 mt-0.5">${req.group}</span>
+                  <span class="text-[#1A1A1A]">${req.text}</span>
+                </li>`).join('')}
+            </ul>
+          </div>
+
+          ${extras.ideas && extras.ideas.length ? `
+            <div class="mt-5 pt-4 border-t border-[#E4E1DA]">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-[#666666] mb-2.5">Common homeowner works here</h3>
+              <div class="flex flex-wrap gap-1.5">
+                ${extras.ideas.map(i => `<span class="px-3 py-1 rounded-full bg-[#FFFFFF] border border-[#E4E1DA] text-xs text-[#1A1A1A]">${i}</span>`).join('')}
+              </div>
+            </div>` : ''}
+        </div>
+      `;
+    }
+
+    function renderFloorPlanSVG() {
+      return `
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="absolute inset-0 w-full h-full">
+          <rect width="100" height="100" fill="#FAF8F5"/>
+          <!-- Ground Floor Outline -->
+          <rect x="14" y="14.2" width="30.5" height="58.3" fill="#FFFFFF" stroke="#1A1A1A" stroke-width="0.6"/>
+          <rect x="14" y="14.2" width="10.6" height="6.3" fill="#F2EFE9" stroke="#1A1A1A" stroke-width="0.4"/>
+          <text x="19.3" y="17.8" font-size="1.8" font-weight="600" text-anchor="middle" fill="#444">YARD</text>
+          <rect x="24.6" y="14.2" width="12.4" height="10" fill="#EAF2F5" stroke="#1A1A1A" stroke-width="0.4"/>
+          <text x="30.8" y="19.5" font-size="1.8" font-weight="600" text-anchor="middle" fill="#444">BATH 1</text>
+          <rect x="14" y="20.5" width="15" height="20" fill="#F9F6F0" stroke="#1A1A1A" stroke-width="0.4"/>
+          <text x="21.5" y="31" font-size="1.9" font-weight="600" text-anchor="middle" fill="#444">KITCHEN</text>
+          <rect x="29" y="24.2" width="15.5" height="16.8" fill="#FFFFFF" stroke="#1A1A1A" stroke-width="0.4"/>
+          <text x="36.7" y="32.5" font-size="1.7" font-weight="600" text-anchor="middle" fill="#444">GUEST BEDROOM</text>
+          <rect x="8.4" y="38.5" width="5.6" height="13" fill="#EFECE6" stroke="#1A1A1A" stroke-width="0.35"/>
+          <text x="11.2" y="45.5" font-size="1.4" font-weight="600" text-anchor="middle" fill="#555">TERRACE 2</text>
+          <text x="25" y="48.5" font-size="2" font-weight="600" text-anchor="middle" fill="#444">DINING</text>
+          <text x="25" y="62.5" font-size="2" font-weight="600" text-anchor="middle" fill="#444">LIVING</text>
+          <rect x="35.2" y="52" width="9.3" height="12" fill="#F4EFEA" stroke="#1A1A1A" stroke-width="0.4"/>
+          <text x="39.8" y="58.5" font-size="1.6" font-weight="600" text-anchor="middle" fill="#444">STAIRS</text>
+          <rect x="13.8" y="72.8" width="30.7" height="13.2" fill="#F2F0EC" stroke="#1A1A1A" stroke-width="0.4" stroke-dasharray="1,1"/>
+          <text x="29" y="81.5" font-size="1.9" font-weight="600" text-anchor="middle" fill="#444">CAR PORCH</text>
+          <!-- Outer Front Gate & Side Perimeter Fence on 2D Plan -->
+          <rect x="13" y="86.2" width="32" height="3.1" fill="#D9D4CA" stroke="#1A1A1A" stroke-width="0.45"/>
+          <text x="29" y="88.3" font-size="1.5" font-weight="700" text-anchor="middle" fill="#1A1A1A">FRONT FOLDING GATE</text>
+          <rect x="4.6" y="14.2" width="1.5" height="75.1" fill="#E5E0D6" stroke="#1A1A1A" stroke-width="0.35"/>
+          <text x="29" y="95.5" font-size="2.3" font-weight="700" text-anchor="middle" fill="#1A1A1A">GROUND FLOOR</text>
+
+          <!-- First Floor Outline -->
+          <rect x="61.5" y="14.5" width="30" height="58.3" fill="#FFFFFF" stroke="#1A1A1A" stroke-width="0.6"/>
+          <rect x="68" y="14.5" width="8.2" height="11.5" fill="#EAF2F5" stroke="#1A1A1A" stroke-width="0.4"/>
+          <text x="72.1" y="21" font-size="1.6" font-weight="600" text-anchor="middle" fill="#444">BATH 3</text>
+          <rect x="76.2" y="14.5" width="8.3" height="11.5" fill="#EAF2F5" stroke="#1A1A1A" stroke-width="0.4"/>
+          <text x="80.3" y="21" font-size="1.6" font-weight="600" text-anchor="middle" fill="#444">BATH 2</text>
+          <rect x="61.5" y="26" width="15" height="14.8" fill="#FFFFFF" stroke="#1A1A1A" stroke-width="0.4"/>
+          <text x="69" y="33.8" font-size="1.7" font-weight="600" text-anchor="middle" fill="#444">BEDROOM 3</text>
+          <rect x="76.5" y="26" width="15" height="14.8" fill="#FFFFFF" stroke="#1A1A1A" stroke-width="0.4"/>
+          <text x="84" y="33.8" font-size="1.7" font-weight="600" text-anchor="middle" fill="#444">BEDROOM 2</text>
+          <rect x="57.4" y="40.5" width="4.1" height="11" fill="#EFECE6" stroke="#1A1A1A" stroke-width="0.35"/>
+          <text x="59.4" y="46.5" font-size="1.5" font-weight="600" text-anchor="middle" fill="#555">A/C 2</text>
+          <text x="72.5" y="46.5" font-size="1.8" font-weight="600" text-anchor="middle" fill="#444">FAMILY AREA</text>
+          <rect x="83.5" y="42" width="8" height="16" fill="#F4EFEA" stroke="#1A1A1A" stroke-width="0.4"/>
+          <rect x="61.5" y="52.2" width="21.5" height="20.5" fill="#FFFFFF" stroke="#1A1A1A" stroke-width="0.4"/>
+          <text x="72.2" y="62.5" font-size="1.8" font-weight="600" text-anchor="middle" fill="#444">MASTER BEDROOM</text>
+          <rect x="83" y="59" width="8.5" height="13.5" fill="#EAF2F5" stroke="#1A1A1A" stroke-width="0.4"/>
+          <text x="87.2" y="65.8" font-size="1.5" font-weight="600" text-anchor="middle" fill="#444">MASTER BATH</text>
+          <rect x="79.5" y="72.5" width="12" height="3.3" fill="#EFECE6" stroke="#1A1A1A" stroke-width="0.35"/>
+          <text x="85.5" y="74.6" font-size="1.5" font-weight="600" text-anchor="middle" fill="#555">A/C 1</text>
+          <text x="76.5" y="95.5" font-size="2.3" font-weight="700" text-anchor="middle" fill="#1A1A1A">FIRST FLOOR</text>
+        </svg>
+      `;
+    }
+
+    function refreshExplorerUIOnly() {
+      if (state.route !== '/explorer') {
+        renderApp();
+        return;
+      }
+      const topControls = document.getElementById('explorer-top-controls');
+      const stageOverlay = document.getElementById('vstage-overlay');
+      const thumbs = document.getElementById('explorer-thumbs');
+      const detailPanel = document.getElementById('explorer-detail-panel');
+      const stage = document.getElementById('vstage');
+      const view = viewById(state.viewId);
+
+      if (stage) {
+        stage.style.aspectRatio = `${view.w}/${view.h}`;
+      }
+      if (topControls) topControls.innerHTML = renderExplorerTopControls();
+      if (stageOverlay) stageOverlay.innerHTML = renderExplorerStageOverlay();
+      if (thumbs) thumbs.innerHTML = renderExplorerThumbnails();
+      if (detailPanel) detailPanel.innerHTML = renderExplorerDetailPanel();
+    }
+
+    // Three.js Architectural Scene Controller (synchronizes camera movement + cutaway animations + exact 3D wall projection)
+    const threeHouse = {
+      initialized: false,
+      renderer: null,
+      scene: null,
+      camera: null,
+      raycaster: null,
+      roofGroup: null,
+      level2Group: null,
+      level1Group: null,
+      interactiveMeshes: [],
+      zoneFaceDefs: [], // Exact 3D quad surfaces for perspective-locked SVG polygons
+      animFrame: null,
+      animStart: 0,
+      animDuration: 1050,
+      isAnimating: false,
+      fromPose: null,
+      toPose: null,
+      currentPose: null
+    };
+
+    const CAMERA_POSES = {
+      front: {
+        camPos: { x: 14.5, y: 7.8, z: 15.8 },
+        lookAt: { x: 1.5, y: 2.1, z: 0.8 },
+        roofY: 0,
+        roofOpacity: 1,
+        l2Y: 0,
+        l2Opacity: 1
+      },
+      side: {
+        camPos: { x: -1.2, y: 8.4, z: 19.5 },
+        lookAt: { x: -0.4, y: 2.1, z: 1.2 },
+        roofY: 0,
+        roofOpacity: 1,
+        l2Y: 0,
+        l2Opacity: 1
+      },
+      rear: {
+        camPos: { x: -15.4, y: 8.8, z: 13.4 },
+        lookAt: { x: -1.4, y: 2.1, z: 0.8 },
+        roofY: 0,
+        roofOpacity: 1,
+        l2Y: 0,
+        l2Opacity: 1
+      },
+      l1: {
+        camPos: { x: 0.4, y: 22.4, z: 5.0 },
+        lookAt: { x: 0.4, y: 0.6, z: 1.2 },
+        roofY: 14,
+        roofOpacity: 0,
+        l2Y: 10,
+        l2Opacity: 0
+      },
+      l2: {
+        camPos: { x: 0.4, y: 22.8, z: 5.0 },
+        lookAt: { x: 0.4, y: 2.9, z: 1.2 },
+        roofY: 14,
+        roofOpacity: 0,
+        l2Y: 0,
+        l2Opacity: 1
+      }
+    };
+
+    // Helper to register an exact 3D quad face (4 world-space corners in order) for a zone in specific views
+    function registerZoneFace(zoneId, views, corners3D, groupRef = 'l1') {
+      threeHouse.zoneFaceDefs.push({ zoneId, views, corners3D, groupRef });
+    }
+
+    // Projects the 3D vertices of a zone's faces onto 2D stage percentage coordinates (0..100)
+    // so the SVG polygon outline hugs the exact perspective angle of every wall!
+    function getProjected3DPolygons(zoneId, viewId) {
+      initThreeHouseIfNeeded();
+      if (!threeHouse.initialized || !threeHouse.camera) return [];
+
+      // Temporarily ensure camera is at the target view's resting pose if we're querying while paused
+      const targetPose = threeHouse.isAnimating && threeHouse.currentPose
+        ? threeHouse.currentPose
+        : (CAMERA_POSES[viewId] || CAMERA_POSES.l1);
+
+      const cam = threeHouse.camera;
+      cam.position.set(targetPose.camPos.x, targetPose.camPos.y, targetPose.camPos.z);
+      cam.lookAt(targetPose.lookAt.x, targetPose.lookAt.y, targetPose.lookAt.z);
+      cam.updateMatrixWorld(true);
+      cam.updateProjectionMatrix();
+
+      const matchingFaces = threeHouse.zoneFaceDefs.filter(
+        f => f.zoneId === zoneId && f.views.includes(viewId)
+      );
+
+      const polys = [];
+      const tmpVec = new THREE.Vector3();
+
+      matchingFaces.forEach(face => {
+        const pts2D = [];
+        let behindCamera = false;
+        face.corners3D.forEach(([wx, wy, wz]) => {
+          tmpVec.set(wx, wy, wz);
+          tmpVec.project(cam);
+          if (tmpVec.z > 1.0) behindCamera = true;
+          const px = ((tmpVec.x + 1) * 0.5) * 100;
+          const py = ((-tmpVec.y + 1) * 0.5) * 100;
+          pts2D.push(`${px.toFixed(2)},${py.toFixed(2)}`);
+        });
+        if (!behindCamera && pts2D.length >= 3) {
+          polys.push(pts2D.join(' '));
+        }
+      });
+
+      return polys;
+    }
+
+    function initThreeHouseIfNeeded() {
+      const canvas = document.getElementById('house-3d-canvas');
+      if (!canvas || typeof THREE === 'undefined') return;
+
+      if (threeHouse.initialized && threeHouse.renderer && threeHouse.renderer.domElement === canvas) {
+        resizeThreeHouse();
+        return;
+      }
+
+      const stage = document.getElementById('vstage');
+      const w = (stage && stage.clientWidth) || 720;
+      const h = (stage && stage.clientHeight) || 440;
+
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setSize(w, h, false);
+      renderer.shadowMap.enabled = true;
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x232b35);
+
+      const camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 200);
+      const raycaster = new THREE.Raycaster();
+
+      threeHouse.interactiveMeshes = [];
+      threeHouse.zoneFaceDefs = [];
+
+      // Lighting matching architectural renders
+      const hemi = new THREE.HemisphereLight(0xfff8ed, 0x3b4836, 0.88);
+      scene.add(hemi);
+
+      const dirLight = new THREE.DirectionalLight(0xfff1d6, 0.95);
+      dirLight.position.set(16, 26, 18);
+      dirLight.castShadow = true;
+      scene.add(dirLight);
+
+      // Ground & Lush Corner Lawn + Stepping Stones + Side Deck
+      const turfMat = new THREE.MeshLambertMaterial({ color: 0x4b7435 });
+      const turf = new THREE.Mesh(new THREE.BoxGeometry(26, 0.3, 22), turfMat);
+      turf.position.set(0, -0.15, 0);
+      scene.add(turf);
+
+      // Driveway & Road
+      const driveMat = new THREE.MeshLambertMaterial({ color: 0x6f7378 });
+      const driveway = new THREE.Mesh(new THREE.BoxGeometry(8.5, 0.32, 6.2), driveMat);
+      driveway.position.set(5.2, -0.13, 0.2);
+      scene.add(driveway);
+
+      // Helper to create a tagged 3D box mesh with subtle architectural edge lines
+      const createZoneMesh = (grp, zoneId, wBox, hBox, dBox, x, y, z, baseHex, isTransparentGroup = false, rotX = 0) => {
+        const mat = new THREE.MeshLambertMaterial({
+          color: baseHex,
+          transparent: isTransparentGroup,
+          opacity: 1,
+          emissive: 0x000000,
+          emissiveIntensity: 0
+        });
+        const geom = new THREE.BoxGeometry(wBox, hBox, dBox);
+        const mesh = new THREE.Mesh(geom, mat);
+        mesh.position.set(x, y, z);
+        if (rotX) mesh.rotation.x = rotX;
+        mesh.userData = { zoneId, baseHex, isTransparentGroup };
+
+        // Subtle crisp architectural edge outline on every 3D part
+        const edges = new THREE.EdgesGeometry(geom);
+        const lineMat = new THREE.LineBasicMaterial({
+          color: 0x1a1a1a,
+          transparent: true,
+          opacity: 0.22
+        });
+        const lineSeg = new THREE.LineSegments(edges, lineMat);
+        mesh.add(lineSeg);
+        mesh.userData.edgeLine = lineSeg;
+
+        grp.add(mesh);
+        if (zoneId) {
+          threeHouse.interactiveMeshes.push(mesh);
+        }
+        return mesh;
+      };
+
+      // LEVEL 1 GROUP (Ground Floor Cutaway Interior + Walls + Exterior)
+      const level1Group = new THREE.Group();
+      const l1H = 2.6;
+
+      // L1 Main Floor Slab
+      createZoneMesh(level1Group, null, 11.2, 0.24, 7.2, -0.8, 0.12, 0, 0xe6e1d8);
+
+      // 1. SIDE TERRACE & GARDEN DECK ('side-terrace')
+      createZoneMesh(level1Group, 'side-terrace', 5.2, 0.26, 3.8, -0.2, 0.13, 5.5, 0x7a563e);
+      const umbrella = new THREE.Mesh(new THREE.ConeGeometry(1.65, 0.6, 8), new THREE.MeshLambertMaterial({ color: 0xf4efe6 }));
+      umbrella.position.set(-0.2, 1.85, 5.8);
+      umbrella.userData = { zoneId: 'side-terrace', baseHex: 0xf4efe6 };
+      threeHouse.interactiveMeshes.push(umbrella);
+      level1Group.add(umbrella);
+      registerZoneFace('side-terrace', ['front', 'side', 'rear', 'l1', 'l2'], [
+        [-2.8, 0.26, 3.6], [2.4, 0.26, 3.6], [2.4, 0.26, 7.4], [-2.8, 0.26, 7.4]
+      ]);
+
+      // Stepping stones
+      const stoneMat = new THREE.MeshLambertMaterial({ color: 0x9aa0a6 });
+      [[-4.2, 5.2], [-3.3, 5.5], [3.2, 5.4], [4.1, 5.8], [5.0, 5.3]].forEach(([sx, sz]) => {
+        const st = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.08, 12), stoneMat);
+        st.position.set(sx, 0.04, sz);
+        scene.add(st);
+      });
+
+      // 2. REAR EXTENSION & YARD ('rear-extension')
+      createZoneMesh(level1Group, 'rear-extension', 2.4, 0.25, 4.2, -5.8, 0.13, 1.5, 0xc8c3b8);
+      createZoneMesh(level1Group, 'rear-extension', 2.4, l1H, 0.28, -5.8, l1H / 2, 3.46, 0xedeae2);
+      createZoneMesh(level1Group, 'rear-extension', 0.28, l1H, 4.2, -6.86, l1H / 2, 1.5, 0xedeae2);
+      // Rear extension 3D faces (side wall, back wall, and top footprint in L1)
+      registerZoneFace('rear-extension', ['side', 'rear'], [
+        [-7.0, 0.1, 3.6], [-4.6, 0.1, 3.6], [-4.6, l1H, 3.6], [-7.0, l1H, 3.6]
+      ]);
+      registerZoneFace('rear-extension', ['rear'], [
+        [-7.0, 0.1, -0.6], [-7.0, 0.1, 3.6], [-7.0, l1H, 3.6], [-7.0, l1H, -0.6]
+      ]);
+      registerZoneFace('rear-extension', ['l1'], [
+        [-7.0, 0.3, -0.6], [-4.6, 0.3, -0.6], [-4.6, 0.3, 3.6], [-7.0, 0.3, 3.6]
+      ]);
+
+      // 3. STRUCTURAL WALLS, BEAMS & COLUMNS ('structural-wall')
+      // Party wall along back (z = -3.45)
+      createZoneMesh(level1Group, 'structural-wall', 11.2, l1H, 0.36, -0.8, l1H / 2, -3.45, 0xd4ccc0);
+      // Staircase structural core wall (x = 0.2 .. 3.6, z = -1.1)
+      createZoneMesh(level1Group, 'structural-wall', 3.4, l1H, 0.34, 1.9, l1H / 2, -1.1, 0xd4ccc0);
+      // Structural corner columns (Front-right, Middle-side, Rear-corner)
+      createZoneMesh(level1Group, 'structural-wall', 0.48, 5.2, 0.48, 4.75, 2.6, 3.45, 0xc9c0b2);
+      createZoneMesh(level1Group, 'structural-wall', 0.48, 5.2, 0.48, -0.6, 2.6, 3.45, 0xc9c0b2);
+      createZoneMesh(level1Group, 'structural-wall', 0.48, 5.2, 0.48, -4.6, 2.6, 3.45, 0xc9c0b2);
+
+      // Register exact 3D structural wall & column faces per view
+      registerZoneFace('structural-wall', ['front', 'side'], [
+        [4.5, 0.1, 3.68], [5.0, 0.1, 3.68], [5.0, 5.2, 3.68], [4.5, 5.2, 3.68]
+      ]);
+      registerZoneFace('structural-wall', ['front', 'side', 'rear'], [
+        [-0.85, 0.1, 3.68], [-0.35, 0.1, 3.68], [-0.35, 5.2, 3.68], [-0.85, 5.2, 3.68]
+      ]);
+      registerZoneFace('structural-wall', ['side', 'rear'], [
+        [-4.85, 0.1, 3.68], [-4.35, 0.1, 3.68], [-4.35, 5.2, 3.68], [-4.85, 5.2, 3.68]
+      ]);
+      registerZoneFace('structural-wall', ['l1'], [
+        [-6.4, l1H, -3.65], [4.8, l1H, -3.65], [4.8, l1H, -3.25], [-6.4, l1H, -3.25]
+      ]);
+      registerZoneFace('structural-wall', ['l1'], [
+        [0.1, l1H, -2.5], [3.6, l1H, -2.5], [3.6, l1H, -0.9], [0.1, l1H, -0.9]
+      ]);
+
+      // 4. EXTERIOR WALLS & FACADE WINDOWS ('exterior-wall')
+      // Garden-facing side exterior wall (z = 3.45)
+      createZoneMesh(level1Group, 'exterior-wall', 9.2, l1H, 0.3, 0.1, l1H / 2, 3.45, 0xf7f5f0);
+      // Front elevation wall (x = 4.65)
+      createZoneMesh(level1Group, 'exterior-wall', 0.32, l1H, 7.1, 4.65, l1H / 2, 0, 0xf7f5f0);
+      // Rear main wall (x = -4.6)
+      createZoneMesh(level1Group, 'exterior-wall', 0.32, l1H, 3.8, -4.6, l1H / 2, -1.5, 0xf7f5f0);
+
+      // Register exact 3D exterior wall faces for L1 cutaway
+      registerZoneFace('exterior-wall', ['l1'], [
+        [-4.6, l1H, 3.3], [4.8, l1H, 3.3], [4.8, l1H, 3.65], [-4.6, l1H, 3.65]
+      ]);
+      registerZoneFace('exterior-wall', ['l1'], [
+        [4.48, l1H, -3.4], [4.85, l1H, -3.4], [4.85, l1H, 3.5], [4.48, l1H, 3.5]
+      ]);
+
+      // 5. INTERNAL PARTITION WALLS ('internal-wall')
+      // Kitchen / Guest Room partition & Guest Room / Living partition
+      createZoneMesh(level1Group, 'internal-wall', 0.24, l1H, 3.9, -1.9, l1H / 2, -1.4, 0xebe5da);
+      createZoneMesh(level1Group, 'internal-wall', 2.6, l1H, 0.24, -0.6, l1H / 2, 0.4, 0xebe5da);
+      registerZoneFace('internal-wall', ['l1'], [
+        [-2.08, l1H, -3.25], [-1.72, l1H, -3.25], [-1.72, l1H, 0.55], [-2.08, l1H, 0.55]
+      ]);
+      registerZoneFace('internal-wall', ['l1'], [
+        [-1.9, l1H, 0.22], [0.7, l1H, 0.22], [0.7, l1H, 0.58], [-1.9, l1H, 0.58]
+      ]);
+
+      // 6. KITCHEN CABINETS & TILES ('kitchen')
+      createZoneMesh(level1Group, 'kitchen', 2.7, 0.88, 2.6, -3.25, 0.46, 2.0, 0xd8d2c7);
+      createZoneMesh(level1Group, 'kitchen', 0.75, 0.92, 1.7, -1.8, 0.48, 2.0, 0x8d6346); // Island
+      registerZoneFace('kitchen', ['l1'], [
+        [-4.55, 0.92, 0.65], [-1.4, 0.92, 0.65], [-1.4, 0.92, 3.3], [-4.55, 0.92, 3.3]
+      ]);
+
+      // 7. BATHROOM TILES & FITTINGS ('bathroom' on L1)
+      createZoneMesh(level1Group, 'bathroom', 2.4, 0.35, 2.2, -3.25, 0.25, -2.2, 0xdbe7e4);
+      createZoneMesh(level1Group, 'bathroom', 2.4, l1H, 0.22, -3.25, l1H / 2, -1.1, 0xebe5da);
+      registerZoneFace('bathroom', ['l1'], [
+        [-4.5, 0.9, -3.25], [-2.05, 0.9, -3.25], [-2.05, 0.9, -1.1], [-4.5, 0.9, -1.1]
+      ]);
+
+      // Stairs steps & Dining/Living furniture (visual context)
+      for (let i = 0; i < 8; i++) {
+        createZoneMesh(level1Group, 'structural-wall', 0.35, 0.25 + i * 0.28, 1.2, 0.3 + i * 0.38, (0.25 + i * 0.28) / 2, -2.2, 0x8d6346);
+      }
+      createZoneMesh(level1Group, null, 1.3, 0.78, 2.1, 0.4, 0.4, 1.6, 0xf5f2eb); // Dining table
+      createZoneMesh(level1Group, null, 2.1, 0.75, 1.5, 2.8, 0.4, 1.7, 0x7c766e); // Living sofa
+
+      // 8. CAR PORCH CANOPY ('car-porch')
+      createZoneMesh(level1Group, 'car-porch', 3.6, 0.24, 6.8, 6.4, 2.52, 0.1, 0x2f3337);
+      registerZoneFace('car-porch', ['front', 'side', 'rear', 'l1', 'l2'], [
+        [4.65, 2.64, -3.3], [8.2, 2.64, -3.3], [8.2, 2.64, 3.5], [4.65, 2.64, 3.5]
+      ]);
+
+      // 9. FRONT GATE & OUTER PERIMETER FENCE ('front-gate')
+      // Main Gate Pillars & Letterbox Pillar at Driveway Entrance (x = 8.75)
+      createZoneMesh(level1Group, 'front-gate', 0.55, 1.95, 0.55, 8.75, 0.98, -3.35, 0xeae5dc); // Left gate pillar
+      createZoneMesh(level1Group, 'front-gate', 0.62, 1.95, 0.72, 8.75, 0.98, 3.55, 0xeae5dc);  // Right letterbox/meter pillar
+      createZoneMesh(level1Group, 'front-gate', 0.12, 0.42, 0.45, 9.04, 1.28, 3.55, 0x2a2d32);  // Letterbox faceplate
+      createZoneMesh(level1Group, 'front-gate', 0.55, 1.95, 0.55, 8.75, 0.98, 8.65, 0xeae5dc);  // Front-garden corner pillar
+
+      // Trackless 4-Leaf Folding Driveway Gate Panels + Horizontal Louver Bars
+      const leafSpan = 1.52;
+      for (let i = 0; i < 4; i++) {
+        const leafZ = -2.42 + i * 1.56;
+        // Outer dark grey aluminum frame
+        createZoneMesh(level1Group, 'front-gate', 0.18, 1.68, leafSpan, 8.75, 0.88, leafZ, 0x2d3137);
+        // Warm wood-grain & charcoal horizontal louver infill strips
+        createZoneMesh(level1Group, 'front-gate', 0.22, 0.22, leafSpan - 0.14, 8.75, 1.42, leafZ, 0x7c5439);
+        createZoneMesh(level1Group, 'front-gate', 0.22, 0.22, leafSpan - 0.14, 8.75, 1.06, leafZ, 0x41464d);
+        createZoneMesh(level1Group, 'front-gate', 0.22, 0.22, leafSpan - 0.14, 8.75, 0.70, leafZ, 0x7c5439);
+        createZoneMesh(level1Group, 'front-gate', 0.22, 0.22, leafSpan - 0.14, 8.75, 0.34, leafZ, 0x41464d);
+      }
+
+      // Front Garden Boundary Wall & Side Pedestrian Gate (x = 8.75, z = 3.85 .. 8.65)
+      createZoneMesh(level1Group, 'front-gate', 0.32, 0.75, 4.7, 8.75, 0.38, 6.15, 0xe6e1d8);
+      createZoneMesh(level1Group, 'front-gate', 0.16, 0.95, 1.25, 8.75, 1.22, 4.75, 0x2d3137); // Side pedestrian gate
+      createZoneMesh(level1Group, 'front-gate', 0.14, 0.92, 3.1, 8.75, 1.22, 7.05, 0x3b4046);  // Upper metal grille
+
+      // Side Garden Outer Perimeter Fence (z = 8.65, x = -7.0 .. 8.75)
+      createZoneMesh(level1Group, 'front-gate', 15.8, 0.72, 0.32, 0.85, 0.36, 8.65, 0xe6e1d8); // Dwarf masonry wall
+      createZoneMesh(level1Group, 'front-gate', 15.6, 0.92, 0.12, 0.85, 1.18, 8.65, 0x33383e); // Anti-climb grille fencing
+      [-7.0, -3.1, 0.8, 4.75].forEach(px => {
+        createZoneMesh(level1Group, 'front-gate', 0.48, 1.78, 0.48, px, 0.89, 8.65, 0xeae5dc); // Intermediate fence pillars
+      });
+
+      // Rear Garden Boundary Fence Closing the Corner Lot (x = -7.0, z = 3.5 .. 8.65)
+      createZoneMesh(level1Group, 'front-gate', 0.32, 1.65, 5.2, -7.0, 0.82, 6.05, 0xe4dfd5);
+
+      // Register exact 3D faces for the outer gate & perimeter fence across all views
+      // 1. Main Front Driveway Folding Gate & Front Garden Fence (x = 8.85)
+      registerZoneFace('front-gate', ['front', 'side'], [
+        [8.85, 0.0, -3.55], [8.85, 0.0, 8.85], [8.85, 1.92, 8.85], [8.85, 1.92, -3.55]
+      ]);
+      // 2. Side Garden Outer Perimeter Fence (z = 8.78)
+      registerZoneFace('front-gate', ['front', 'side', 'rear'], [
+        [-7.15, 0.0, 8.78], [8.85, 0.0, 8.78], [8.85, 1.75, 8.78], [-7.15, 1.75, 8.78]
+      ]);
+      // 3. Rear Garden Outer Boundary Wall (x = -7.12)
+      registerZoneFace('front-gate', ['rear'], [
+        [-7.12, 0.0, 3.5], [-7.12, 0.0, 8.78], [-7.12, 1.72, 8.78], [-7.12, 1.72, 3.5]
+      ]);
+      // 4. Top-down footprint of Front Gate & Perimeter Fence for Level 1 & Level 2 Cutaways
+      registerZoneFace('front-gate', ['l1', 'l2'], [
+        [8.42, 1.9, -3.55], [9.08, 1.9, -3.55], [9.08, 1.9, 8.85], [8.42, 1.9, 8.85]
+      ]);
+      registerZoneFace('front-gate', ['l1', 'l2'], [
+        [-7.15, 1.75, 8.38], [8.85, 1.75, 8.38], [8.85, 1.75, 8.95], [-7.15, 1.75, 8.95]
+      ]);
+
+      scene.add(level1Group);
+
+      // LEVEL 2 GROUP (First Floor Cutaway Interior + Exterior Upper Facade)
+      const level2Group = new THREE.Group();
+      const l2BaseY = 2.65;
+      const l2H = 2.6;
+
+      // L2 Floor Slab
+      createZoneMesh(level2Group, null, 9.6, 0.24, 7.2, 0.1, l2BaseY, 0, 0xded8ce, true);
+
+      // L2 Structural Walls ('structural-wall')
+      createZoneMesh(level2Group, 'structural-wall', 9.6, l2H, 0.35, 0.1, l2BaseY + l2H / 2, -3.45, 0xd4cdc0, true);
+      createZoneMesh(level2Group, 'structural-wall', 0.32, l2H, 7.1, -1.5, l2BaseY + l2H / 2, 0, 0xd4cdc0, true);
+      registerZoneFace('structural-wall', ['l2'], [
+        [-4.6, l2BaseY + l2H, -3.65], [4.8, l2BaseY + l2H, -3.65], [4.8, l2BaseY + l2H, -3.25], [-4.6, l2BaseY + l2H, -3.25]
+      ], 'l2');
+      registerZoneFace('structural-wall', ['l2'], [
+        [-1.7, l2BaseY + l2H, -3.4], [-1.3, l2BaseY + l2H, -3.4], [-1.3, l2BaseY + l2H, 3.45], [-1.7, l2BaseY + l2H, 3.45]
+      ], 'l2');
+
+      // L2 Exterior Walls ('exterior-wall')
+      createZoneMesh(level2Group, 'exterior-wall', 9.4, l2H, 0.3, 0.1, l2BaseY + l2H / 2, 3.45, 0xf7f5f0, true);
+      createZoneMesh(level2Group, 'exterior-wall', 0.32, l2H, 7.1, 4.75, l2BaseY + l2H / 2, 0, 0xf7f5f0, true);
+      createZoneMesh(level2Group, 'exterior-wall', 0.32, l2H, 7.1, -4.6, l2BaseY + l2H / 2, 0, 0xf7f5f0, true);
+
+      // Register Full 2-Storey Perspective Exterior Wall Polygons for Front, Side, Rear, and L2
+      // Front Elevation Wall (x = 4.82)
+      registerZoneFace('exterior-wall', ['front'], [
+        [4.82, 0.2, -3.4], [4.82, 0.2, 3.45], [4.82, 5.25, 3.45], [4.82, 5.25, -3.4]
+      ]);
+      // Garden Side Elevation Wall (z = 3.62)
+      registerZoneFace('exterior-wall', ['front', 'side', 'rear'], [
+        [-4.55, 0.2, 3.62], [4.75, 0.2, 3.62], [4.75, 5.25, 3.62], [-4.55, 5.25, 3.62]
+      ]);
+      // Rear Elevation Wall (x = -4.65)
+      registerZoneFace('exterior-wall', ['rear'], [
+        [-4.65, 2.65, -3.4], [-4.65, 2.65, 3.45], [-4.65, 5.25, 3.45], [-4.65, 5.25, -3.4]
+      ]);
+      // L2 Cutaway Top Rim of Exterior Wall
+      registerZoneFace('exterior-wall', ['l2'], [
+        [-4.6, l2BaseY + l2H, 3.3], [4.85, l2BaseY + l2H, 3.3], [4.85, l2BaseY + l2H, 3.65], [-4.6, l2BaseY + l2H, 3.65]
+      ], 'l2');
+      registerZoneFace('exterior-wall', ['l2'], [
+        [4.55, l2BaseY + l2H, -3.4], [4.92, l2BaseY + l2H, -3.4], [4.92, l2BaseY + l2H, 3.5], [4.55, l2BaseY + l2H, 3.5]
+      ], 'l2');
+
+      // L2 Internal Partitions ('internal-wall')
+      createZoneMesh(level2Group, 'internal-wall', 0.24, l2H, 5.1, 1.5, l2BaseY + l2H / 2, 0.9, 0xeae4da, true);
+      createZoneMesh(level2Group, 'internal-wall', 3.0, l2H, 0.24, -3.0, l2BaseY + l2H / 2, 0.1, 0xeae4da, true);
+      registerZoneFace('internal-wall', ['l2'], [
+        [1.32, l2BaseY + l2H, -1.6], [1.68, l2BaseY + l2H, -1.6], [1.68, l2BaseY + l2H, 3.4], [1.32, l2BaseY + l2H, 3.4]
+      ], 'l2');
+      registerZoneFace('internal-wall', ['l2'], [
+        [-4.5, l2BaseY + l2H, -0.08], [-1.5, l2BaseY + l2H, -0.08], [-1.5, l2BaseY + l2H, 0.28], [-4.5, l2BaseY + l2H, 0.28]
+      ], 'l2');
+
+      // L2 Bathrooms ('bathroom' — Bath 2, Bath 3, Master Bath)
+      createZoneMesh(level2Group, 'bathroom', 2.8, 0.3, 1.9, -3.0, l2BaseY + 0.2, -2.3, 0xdbe7e4, true);
+      createZoneMesh(level2Group, 'bathroom', 2.4, 0.3, 1.8, 3.3, l2BaseY + 0.2, -2.3, 0xdbe7e4, true);
+      registerZoneFace('bathroom', ['l2'], [
+        [-4.45, l2BaseY + 0.4, -3.25], [-1.6, l2BaseY + 0.4, -3.25], [-1.6, l2BaseY + 0.4, -1.3], [-4.45, l2BaseY + 0.4, -1.3]
+      ], 'l2');
+      registerZoneFace('bathroom', ['l2'], [
+        [2.0, l2BaseY + 0.4, -3.25], [4.55, l2BaseY + 0.4, -3.25], [4.55, l2BaseY + 0.4, -1.3], [2.0, l2BaseY + 0.4, -1.3]
+      ], 'l2');
+
+      // Beds in Master, Bed 2, Bed 3 (visual context)
+      createZoneMesh(level2Group, null, 1.8, 0.55, 1.6, 3.2, l2BaseY + 0.3, 1.5, 0x8d6346, true);
+      createZoneMesh(level2Group, null, 1.5, 0.55, 1.4, -3.3, l2BaseY + 0.3, 2.0, 0x8d6346, true);
+      createZoneMesh(level2Group, null, 1.5, 0.55, 1.4, -3.3, l2BaseY + 0.3, -0.9, 0x8d6346, true);
+
+      // 10. A/C LEDGE & OUTDOOR UNITS ('ac-ledge') + Facade Windows
+      // Front A/C 1 Ledge
+      createZoneMesh(level2Group, 'ac-ledge', 0.65, 0.32, 2.1, 5.15, l2BaseY + 0.2, -2.1, 0x4b4f54, true);
+      // Side A/C 2 Ledge + Feature Window Frame
+      createZoneMesh(level2Group, 'ac-ledge', 2.2, 1.8, 0.35, 0.2, l2BaseY + 1.1, 3.72, 0x3f4347, true);
+      // Front Master Window Frame
+      createZoneMesh(level2Group, 'exterior-wall', 0.2, 1.75, 2.4, 4.92, l2BaseY + 1.25, 1.3, 0x3f4347, true);
+
+      registerZoneFace('ac-ledge', ['front', 'l2'], [
+        [4.95, l2BaseY + 0.1, -3.15], [5.45, l2BaseY + 0.1, -3.15], [5.45, l2BaseY + 0.9, -1.05], [4.95, l2BaseY + 0.9, -1.05]
+      ], 'l2');
+      registerZoneFace('ac-ledge', ['side', 'rear', 'l2'], [
+        [-0.9, l2BaseY + 0.2, 3.82], [1.3, l2BaseY + 0.2, 3.82], [1.3, l2BaseY + 2.0, 3.82], [-0.9, l2BaseY + 2.0, 3.82]
+      ], 'l2');
+
+      scene.add(level2Group);
+
+      // 11. ROOF, EXTENSION, OR EXTRA FLOOR ('roof-extension')
+      const roofGroup = new THREE.Group();
+
+      // Pitched Roof Slope (Garden-facing slope)
+      createZoneMesh(roofGroup, 'roof-extension', 10.2, 0.28, 4.5, 0.1, 6.05, 1.8, 0x2d3136, true, 0.42);
+      // Pitched Roof Slope (Back slope)
+      createZoneMesh(roofGroup, 'roof-extension', 10.2, 0.28, 4.5, 0.1, 6.05, -1.8, 0x2d3136, true, -0.42);
+      // Rear Flat Roof Slab over Yard/Bath
+      createZoneMesh(roofGroup, 'roof-extension', 2.6, 0.28, 7.2, -5.7, 2.75, 0, 0x2d3136, true);
+      // Gable Wall Triangle Box
+      createZoneMesh(roofGroup, 'roof-extension', 0.3, 1.25, 4.0, 4.75, 5.65, 0, 0xf4f2ed, true);
+
+      // Register exact 3D sloped roof faces so the roof polygon matches the exact pitch angle
+      registerZoneFace('roof-extension', ['front', 'side', 'rear'], [
+        [-4.95, 5.22, 3.85], [5.15, 5.22, 3.85], [5.15, 6.95, 0.0], [-4.95, 6.95, 0.0]
+      ], 'roof');
+      registerZoneFace('roof-extension', ['front'], [
+        [5.15, 6.95, 0.0], [5.15, 5.22, -3.85], [-4.95, 5.22, -3.85], [-4.95, 6.95, 0.0]
+      ], 'roof');
+      registerZoneFace('roof-extension', ['side', 'rear'], [
+        [-7.0, 2.88, -3.5], [-4.5, 2.88, -3.5], [-4.5, 2.88, 3.5], [-7.0, 2.88, 3.5]
+      ], 'roof');
+      registerZoneFace('roof-extension', ['l1', 'l2'], [
+        [-4.6, 5.25, -3.85], [4.85, 5.25, -3.85], [4.85, 5.25, -2.65], [-4.6, 5.25, -2.65]
+      ], 'roof');
+
+      scene.add(roofGroup);
+
+      threeHouse.initialized = true;
+      threeHouse.renderer = renderer;
+      threeHouse.scene = scene;
+      threeHouse.camera = camera;
+      threeHouse.raycaster = raycaster;
+      threeHouse.roofGroup = roofGroup;
+      threeHouse.level2Group = level2Group;
+      threeHouse.level1Group = level1Group;
+
+      bindStage3DPointerEvents();
+
+      const initialPose = CAMERA_POSES[state.viewId] || CAMERA_POSES.l1;
+      applyThreePose(initialPose);
+    }
+
+    // Highlights the active and hovered 3D walls/parts directly in the 3D WebGL scene
+    function updateThreeWallHighlights() {
+      if (!threeHouse.initialized || !threeHouse.interactiveMeshes) return;
+
+      const activeId = state.activeZoneId;
+      const hoveredId = state.hoveredZoneId;
+      const showAll = state.showAllColors;
+
+      threeHouse.interactiveMeshes.forEach(mesh => {
+        const zId = mesh.userData.zoneId;
+        if (!zId || !mesh.material) return;
+        const zone = getZone(zId);
+        if (!zone) return;
+        const badge = getComplianceBadge(zone.level);
+        const ruleColor = new THREE.Color(badge.hex);
+        const baseColor = new THREE.Color(mesh.userData.baseHex || 0xffffff);
+
+        const isSelected = zId === activeId;
+        const isHovered = zId === hoveredId;
+
+        if (isSelected || isHovered) {
+          mesh.material.color.copy(baseColor).lerp(ruleColor, isHovered ? 0.58 : 0.45);
+          if (mesh.material.emissive) {
+            mesh.material.emissive.copy(ruleColor);
+            mesh.material.emissiveIntensity = isHovered ? 0.28 : 0.18;
+          }
+          if (mesh.userData.edgeLine) {
+            mesh.userData.edgeLine.material.color.copy(ruleColor);
+            mesh.userData.edgeLine.material.opacity = 0.95;
+          }
+        } else if (showAll) {
+          mesh.material.color.copy(baseColor).lerp(ruleColor, 0.28);
+          if (mesh.material.emissive) {
+            mesh.material.emissive.setHex(0x000000);
+            mesh.material.emissiveIntensity = 0;
+          }
+          if (mesh.userData.edgeLine) {
+            mesh.userData.edgeLine.material.color.copy(ruleColor);
+            mesh.userData.edgeLine.material.opacity = 0.65;
+          }
+        } else {
+          mesh.material.color.copy(baseColor);
+          if (mesh.material.emissive) {
+            mesh.material.emissive.setHex(0x000000);
+            mesh.material.emissiveIntensity = 0;
+          }
+          if (mesh.userData.edgeLine) {
+            mesh.userData.edgeLine.material.color.setHex(0x1a1a1a);
+            mesh.userData.edgeLine.material.opacity = 0.22;
+          }
+        }
+      });
+
+      if (threeHouse.renderer && threeHouse.scene && threeHouse.camera) {
+        threeHouse.renderer.render(threeHouse.scene, threeHouse.camera);
+      }
+    }
+
+    // Raycasts mouse cursor directly against the 3D house walls when paused so any wall under the cursor is selectable
+    function bindStage3DPointerEvents() {
+      const stage = document.getElementById('vstage');
+      if (!stage || stage.dataset.raycastBound === 'true') return;
+      stage.dataset.raycastBound = 'true';
+
+      stage.addEventListener('mousemove', (e) => {
+        if (state.isVideoPlaying || viewById(state.viewId).type !== 'video') return;
+        // If hovering a button or nav arrow, ignore
+        if (e.target && e.target.closest && e.target.closest('button')) return;
+
+        // If hovering an SVG polygon directly, use its data-zone
+        const polyZone = e.target && e.target.getAttribute && e.target.getAttribute('data-zone');
+        if (polyZone) {
+          if (state.hoveredZoneId !== polyZone) {
+            state.hoveredZoneId = polyZone;
+            updateHoveredPolygonClasses();
+            updateThreeWallHighlights();
+          }
+          zoneTip(e, polyZone);
+          return;
+        }
+
+        // Otherwise raycast into the 3D architectural model
+        const hitZone = raycast3DZoneAtEvent(e);
+        if (hitZone) {
+          if (state.hoveredZoneId !== hitZone) {
+            state.hoveredZoneId = hitZone;
+            updateHoveredPolygonClasses();
+            updateThreeWallHighlights();
+          }
+          stage.style.cursor = 'pointer';
+          zoneTip(e, hitZone);
+        } else {
+          if (state.hoveredZoneId) {
+            state.hoveredZoneId = null;
+            updateHoveredPolygonClasses();
+            updateThreeWallHighlights();
+          }
+          stage.style.cursor = 'default';
+          hideZoneTip();
+        }
+      });
+
+      stage.addEventListener('mouseleave', () => {
+        if (state.hoveredZoneId) {
+          state.hoveredZoneId = null;
+          updateHoveredPolygonClasses();
+          updateThreeWallHighlights();
+        }
+        hideZoneTip();
+      });
+
+      stage.addEventListener('click', (e) => {
+        if (state.isVideoPlaying || viewById(state.viewId).type !== 'video') return;
+        if (e.target && e.target.closest && (e.target.closest('button') || e.target.closest('polygon'))) return;
+        const hitZone = raycast3DZoneAtEvent(e);
+        if (hitZone) {
+          selectZoneInExplorer(hitZone);
+        }
+      });
+    }
+
+    function updateHoveredPolygonClasses() {
+      const stage = document.getElementById('vstage');
+      if (!stage) return;
+      stage.querySelectorAll('polygon.zp').forEach(p => {
+        const zid = p.getAttribute('data-zone');
+        if (zid && zid === state.hoveredZoneId) {
+          p.classList.add('hovered');
+        } else {
+          p.classList.remove('hovered');
+        }
+      });
+    }
+
+    function raycast3DZoneAtEvent(e) {
+      if (!threeHouse.initialized || !threeHouse.raycaster || !threeHouse.camera) return null;
+      const stage = document.getElementById('vstage');
+      if (!stage) return null;
+      const rect = stage.getBoundingClientRect();
+      const ndcX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      const ndcY = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+      threeHouse.raycaster.setFromCamera({ x: ndcX, y: ndcY }, threeHouse.camera);
+
+      // Filter only visible meshes in the current cutaway level
+      const visibleCandidates = threeHouse.interactiveMeshes.filter(m => {
+        if (!m.visible) return false;
+        let p = m.parent;
+        while (p) {
+          if (!p.visible) return false;
+          p = p.parent;
+        }
+        return true;
+      });
+
+      const hits = threeHouse.raycaster.intersectObjects(visibleCandidates, false);
+      const allowedInView = zonesInView(state.viewId);
+      for (const hit of hits) {
+        const zId = hit.object && hit.object.userData && hit.object.userData.zoneId;
+        if (zId && allowedInView.includes(zId)) {
+          return zId;
+        }
+      }
+      return null;
+    }
+
+    function resizeThreeHouse() {
+      if (!threeHouse.initialized || !threeHouse.renderer || !threeHouse.camera) return;
+      const stage = document.getElementById('vstage');
+      if (!stage) return;
+      const w = stage.clientWidth || 720;
+      const h = stage.clientHeight || 440;
+      threeHouse.renderer.setSize(w, h, false);
+      threeHouse.camera.aspect = w / h;
+      threeHouse.camera.updateProjectionMatrix();
+      if (threeHouse.currentPose) {
+        applyThreePose(threeHouse.currentPose);
+      }
+    }
+
+    function setGroupOpacity(group, yOffset, opacity) {
+      if (!group) return;
+      group.position.y = yOffset;
+      group.visible = opacity > 0.03;
+      group.traverse(obj => {
+        if (obj.isMesh && obj.material) {
+          obj.material.transparent = opacity < 0.99;
+          obj.material.opacity = opacity;
+        }
+      });
+    }
+
+    function applyThreePose(pose) {
+      if (!threeHouse.initialized) return;
+      threeHouse.currentPose = pose;
+      threeHouse.camera.position.set(pose.camPos.x, pose.camPos.y, pose.camPos.z);
+      threeHouse.camera.lookAt(pose.lookAt.x, pose.lookAt.y, pose.lookAt.z);
+      threeHouse.camera.updateMatrixWorld(true);
+      setGroupOpacity(threeHouse.roofGroup, pose.roofY, pose.roofOpacity);
+      setGroupOpacity(threeHouse.level2Group, pose.l2Y, pose.l2Opacity);
+      updateThreeWallHighlights();
+    }
+
+    function animateThreeCamera(fromViewId, toViewId, playTransition, onComplete) {
+      initThreeHouseIfNeeded();
+      if (!threeHouse.initialized) {
+        if (onComplete) onComplete();
+        return;
+      }
+
+      if (threeHouse.animFrame) {
+        cancelAnimationFrame(threeHouse.animFrame);
+        threeHouse.animFrame = null;
+      }
+
+      const targetPose = CAMERA_POSES[toViewId] || CAMERA_POSES.l1;
+      if (!playTransition) {
+        threeHouse.isAnimating = false;
+        applyThreePose(targetPose);
+        if (onComplete) onComplete();
+        return;
+      }
+
+      threeHouse.isAnimating = true;
+
+      // Pick starting pose for smooth transition or replay
+      let startPose = threeHouse.currentPose || CAMERA_POSES[fromViewId];
+      if (!fromViewId || fromViewId === toViewId) {
+        const pairMap = { l1: 'l2', l2: 'l1', front: 'side', side: 'front', rear: 'side' };
+        startPose = CAMERA_POSES[pairMap[toViewId] || 'front'];
+      }
+
+      const startTime = performance.now();
+      const duration = 1040; // Matches the 1.04s MP4 clips
+
+      const lerp = (a, b, t) => a + (b - a) * t;
+      const easeInOutCubic = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+      function step(now) {
+        const rawT = Math.min(1, (now - startTime) / duration);
+        const t = easeInOutCubic(rawT);
+
+        const interpolated = {
+          camPos: {
+            x: lerp(startPose.camPos.x, targetPose.camPos.x, t),
+            y: lerp(startPose.camPos.y, targetPose.camPos.y, t),
+            z: lerp(startPose.camPos.z, targetPose.camPos.z, t)
+          },
+          lookAt: {
+            x: lerp(startPose.lookAt.x, targetPose.lookAt.x, t),
+            y: lerp(startPose.lookAt.y, targetPose.lookAt.y, t),
+            z: lerp(startPose.lookAt.z, targetPose.lookAt.z, t)
+          },
+          roofY: lerp(startPose.roofY, targetPose.roofY, t),
+          roofOpacity: lerp(startPose.roofOpacity, targetPose.roofOpacity, t),
+          l2Y: lerp(startPose.l2Y, targetPose.l2Y, t),
+          l2Opacity: lerp(startPose.l2Opacity, targetPose.l2Opacity, t)
+        };
+
+        applyThreePose(interpolated);
+
+        if (rawT < 1) {
+          threeHouse.animFrame = requestAnimationFrame(step);
+        } else {
+          threeHouse.animFrame = null;
+          threeHouse.isAnimating = false;
+          applyThreePose(targetPose);
+          if (onComplete) onComplete();
+        }
+      }
+
+      threeHouse.animFrame = requestAnimationFrame(step);
+    }
+
+    function resolveVideoSrc(filename) {
+      if (state.customVideoUrls && state.customVideoUrls[filename]) {
+        return state.customVideoUrls[filename];
+      }
+      return filename;
+    }
+
+    function handleCustomVideoFiles(event) {
+      const files = Array.from((event.target && event.target.files) || []);
+      if (!files.length) return;
+      let count = 0;
+      files.forEach(file => {
+        const blobUrl = URL.createObjectURL(file);
+        state.customVideoUrls[file.name] = blobUrl;
+        count++;
+        if (file.name.toLowerCase().endsWith('.png') || file.name.toLowerCase().endsWith('.jpg')) {
+          const planImg = document.getElementById('house-plan-img');
+          if (planImg) {
+            planImg.src = blobUrl;
+            planImg.style.opacity = '1';
+          }
+        }
+      });
+      showToast(`Loaded ${count} media file(s) into 3D Explorer`);
+      syncExplorerStageMedia(true, null);
+    }
+
+    // Synchronizes the <video> element, Three.js 3D Engine, and 2D floorplan with the target view
+    function syncExplorerStageMedia(playTransition = true, prevViewId = null) {
+      const view = viewById(state.viewId);
+      const videoEl = document.getElementById('house-video');
+      const canvasEl = document.getElementById('house-3d-canvas');
+      const planWrapEl = document.getElementById('house-plan-wrap');
+      if (!videoEl || !canvasEl || !planWrapEl) return;
+
+      if (view.type === 'image') {
+        videoEl.pause();
+        videoEl.classList.add('hidden');
+        canvasEl.classList.add('hidden');
+        planWrapEl.classList.remove('hidden');
+        state.isVideoPlaying = false;
+        refreshExplorerUIOnly();
+        return;
+      }
+
+      // It's a 3D video/animation view
+      planWrapEl.classList.add('hidden');
+      canvasEl.classList.remove('hidden');
+      videoEl.classList.remove('hidden');
+
+      // 1. Always run the synchronized Three.js 3D camera transition so the stage is never black
+      if (playTransition) {
+        state.isVideoPlaying = true;
+        refreshExplorerUIOnly();
+        animateThreeCamera(prevViewId, view.id, true, () => {
+          if (state.isVideoPlaying) {
+            state.isVideoPlaying = false;
+            refreshExplorerUIOnly();
+          }
+        });
+      } else {
+        state.isVideoPlaying = false;
+        animateThreeCamera(prevViewId, view.id, false);
+        refreshExplorerUIOnly();
+      }
+
+      // 2. Also attempt to play the exact MP4 video clip on top if accessible
+      const directClip = prevViewId ? TRANSITION_VIDEOS[`${prevViewId}->${view.id}`] : null;
+      const clipName = playTransition ? (directClip || view.replayVideo) : view.defaultVideo;
+      const resolvedSrc = resolveVideoSrc(clipName);
+      state.activeVideoSrc = resolvedSrc;
+
+      videoEl.onloadeddata = () => {
+        videoEl.style.opacity = '1';
+      };
+      videoEl.onerror = () => {
+        // Hide video layer so the live 3D architectural render underneath shines through cleanly
+        videoEl.style.opacity = '0';
+      };
+
+      if (playTransition) {
+        videoEl.onended = () => {
+          videoEl.pause();
+          state.isVideoPlaying = false;
+          refreshExplorerUIOnly();
+        };
+
+        if (videoEl.getAttribute('src') !== resolvedSrc) {
+          videoEl.setAttribute('src', resolvedSrc);
+          videoEl.load();
+        }
+        try { videoEl.currentTime = 0; } catch (e) {}
+        const playPromise = videoEl.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+          playPromise.catch(() => {
+            videoEl.style.opacity = '0';
+          });
+        }
+      } else {
+        videoEl.pause();
+        if (videoEl.getAttribute('src') !== resolvedSrc) {
+          videoEl.setAttribute('src', resolvedSrc);
+          videoEl.load();
+        }
+        const setRestingFrame = () => {
+          try {
+            videoEl.currentTime = view.defaultPose === 'end' ? Math.max(0, (videoEl.duration || 1) - 0.05) : 0;
+            videoEl.style.opacity = '1';
+          } catch (e) {}
+        };
+        if (videoEl.readyState >= 2) {
+          setRestingFrame();
+        } else {
+          videoEl.addEventListener('loadeddata', setRestingFrame, { once: true });
+        }
+      }
+    }
+
+    function replayCurrentViewAnimation() {
+      const view = viewById(state.viewId);
+      if (view.type !== 'video') {
+        setView('l1');
+        return;
+      }
+      syncExplorerStageMedia(true, null);
+    }
+
+    function selectZoneInExplorer(zoneId) {
+      const prevViewId = state.viewId;
+      state.activeZoneId = zoneId;
+      const bestViewId = pickBestViewForZone(zoneId);
+
+      if (bestViewId !== prevViewId) {
+        state.viewId = bestViewId;
+        syncExplorerStageMedia(true, prevViewId);
+      } else {
+        updateThreeWallHighlights();
+        refreshExplorerUIOnly();
+      }
+    }
+
+    function setView(viewId) {
+      const prevViewId = state.viewId;
+      state.viewId = viewId;
+      // When switching to a new view, if the current active zone isn't in that view, pick the first zone in that view
+      const availableZones = zonesInView(viewId);
+      if (availableZones.length && !availableZones.includes(state.activeZoneId)) {
+        state.activeZoneId = availableZones[0];
+      }
+      syncExplorerStageMedia(true, prevViewId);
+    }
+
+    function setMode(modeId) {
+      const m = VIEW_MODES.find(x => x.id === modeId);
+      if (!m) return;
+      const withZone = m.views.find(id => ZONE_SHAPES[state.activeZoneId] && ZONE_SHAPES[state.activeZoneId][id]);
+      setView(withZone || m.views[0]);
+    }
+
+    function stepView(dir) {
+      const m = VIEW_MODES.find(x => x.id === viewById(state.viewId).mode);
+      const i = m.views.indexOf(state.viewId);
+      setView(m.views[(i + dir + m.views.length) % m.views.length]);
+    }
+
+    function toggleShowAllColors() {
+      state.showAllColors = !state.showAllColors;
+      updateThreeWallHighlights();
+      refreshExplorerUIOnly();
+    }
+
+    function zoneTip(e, zid) {
+      if (state.isVideoPlaying) return;
+      const tip = document.getElementById('vtip');
+      const stage = document.getElementById('vstage');
+      if (!tip || !stage) return;
+      const z = getZone(zid);
+      const b = getComplianceBadge(z.level);
+      if (state.hoveredZoneId !== zid) {
+        state.hoveredZoneId = zid;
+        updateHoveredPolygonClasses();
+        updateThreeWallHighlights();
+      }
+      tip.innerHTML = `<span class="w-2.5 h-2.5 rounded-full inline-block mr-1.5" style="background:${b.hex}"></span><strong>${z.name}</strong> · ${b.label} <span class="text-[#666666] ml-1">(Click for law)</span>`;
+      tip.style.opacity = 1;
+      const r = stage.getBoundingClientRect();
+      const x = e.clientX - r.left + 14;
+      const y = e.clientY - r.top + 16;
+      tip.style.left = Math.max(8, Math.min(x, r.width - tip.offsetWidth - 8)) + 'px';
+      tip.style.top = Math.max(8, Math.min(y, r.height - tip.offsetHeight - 8)) + 'px';
+    }
+
+    function hideZoneTip() {
+      const tip = document.getElementById('vtip');
+      if (tip) tip.style.opacity = 0;
+      if (state.hoveredZoneId) {
+        state.hoveredZoneId = null;
+        updateHoveredPolygonClasses();
+        updateThreeWallHighlights();
+      }
+    }
+
+    function preloadMediaAssets() {
+      const img = new Image();
+      img.src = 'image_bbd57e.png';
+    }
+
+    /********************************************************************
+     * TASK 5: SMART CHECKLIST SCREEN
+     ********************************************************************/
+    function renderChecklistScreen() {
+      const { groups, totalCount, checkedCount, percentage, hasRedZone } = getDeduplicatedChecklist();
+
+      if (state.selectedZones.length === 0) {
+        return `
+          <div class="max-w-xl mx-auto py-12 text-center bg-[#F7F6F3] rounded-[16px] p-8 border border-[#E4E1DA] border-t-[3px] border-t-[#f48436]">
+            <div class="w-16 h-16 rounded-full bg-[#FFFFFF] border border-[#E4E1DA] flex items-center justify-center mx-auto mb-4 text-[#e93b30]">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+              </svg>
+            </div>
+            <h1 class="text-2xl font-bold text-[#e93b30]">Tap a part of your house to start.</h1>
+            <p class="mt-2 text-sm sm:text-base text-[#666666]">
+              Your smart renovation checklist automatically groups and deduplicates requirements based on the house zones you select.
+            </p>
+            <button
+              onclick="navigate('/explorer')"
+              class="mt-6 px-6 py-3.5 rounded-[16px] bg-[#C7281E] hover:bg-[#A82018] text-white font-bold text-base transition cursor-pointer"
+            >
+              Open 3D Home →
+            </button>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="max-w-4xl mx-auto space-y-6">
+          <!-- Red Zone Statutory PBT Warning Card -->
+          ${hasRedZone ? `
+            <div class="bg-[#FBEAE9] border border-[#B3261E] rounded-[16px] p-5 flex items-start gap-4">
+              <div class="px-2.5 py-1 rounded-full bg-[#FFFFFF] border border-[#B3261E]/40 text-[#B3261E] flex items-center gap-1.5 font-bold shrink-0 text-xs mt-0.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#B3261E]"></span>
+                <span>Needs PBT + engineer</span>
+              </div>
+              <div>
+                <h2 class="text-lg sm:text-xl font-bold text-[#B3261E]">
+                  This renovation needs PBT approval before you start.
+                </h2>
+                <p class="text-xs sm:text-sm text-[#1A1A1A] mt-1 leading-relaxed">
+                  You have selected a structural or extension zone. Under <strong>Section 70(1), Street, Drainage and Building Act 1974 (Act 133)</strong>, building plans by a Qualified Person and written local authority (PBT) approval are mandatory prior to commencing works.
+                </p>
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Top Progress & Active Zones Card -->
+          <div class="bg-[#F7F6F3] rounded-[16px] p-6 border border-[#E4E1DA] border-t-[3px] border-t-[#f48436] space-y-5">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h1 class="text-2xl font-bold text-[#e93b30] pb-1.5 border-b-[3px] border-[#f48436] inline-block">Smart Renovation Checklist</h1>
+                <p class="text-xs sm:text-sm text-[#666666] mt-2">
+                  Deduplicated across ${state.selectedZones.length} selected zone(s) • ${checkedCount} of ${totalCount} items completed
+                </p>
+              </div>
+              <button
+                onclick="navigate('/explorer')"
+                class="px-4 py-2.5 rounded-[14px] bg-[#C7281E] hover:bg-[#A82018] text-white text-xs sm:text-sm font-semibold transition cursor-pointer"
+              >
+                + Add more zones in 3D
+              </button>
+            </div>
+
+            <!-- Progress Bar -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-medium text-[#666666]">Overall Completion</span>
+                <span class="text-sm font-bold text-[#1A1A1A]">${percentage}%</span>
+              </div>
+              <div class="w-full h-3.5 bg-[#FFFFFF] rounded-full overflow-hidden border border-[#E4E1DA]">
+                <div class="h-full bg-[#C7281E] transition-all duration-300 rounded-full" style="width: ${percentage}%"></div>
+              </div>
+            </div>
+
+            <!-- Selected Zones Pills -->
+            <div class="pt-3 border-t border-[#E4E1DA]">
+              <div class="text-xs font-semibold uppercase tracking-wider text-[#666666] mb-2.5">
+                Included House Zones (Click × to remove zone & its items)
+              </div>
+              <div class="flex flex-wrap gap-2">
+                ${state.selectedZones.map(zId => {
+                  const z = getZone(zId);
+                  if (!z) return '';
+                  const b = getComplianceBadge(z.level);
+                  return `
+                    <div class="inline-flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-full bg-[#FFFFFF] border border-[#E4E1DA] text-xs font-semibold text-[#1A1A1A]">
+                      <span class="w-2.5 h-2.5 rounded-full" style="background:${b.hex}"></span>
+                      <span>${z.name}</span>
+                      <span class="text-[11px] font-medium ${b.text}">(${b.label})</span>
+                      <button
+                        onclick="toggleZoneInChecklist('${z.id}')"
+                        title="Remove ${z.name}"
+                        class="w-5 h-5 rounded-full bg-[#F7F6F3] hover:bg-[#C7281E] hover:text-white flex items-center justify-center text-[#666666] transition cursor-pointer"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          </div>
+
+          <!-- Grouped Requirement Cards -->
+          <div class="space-y-4">
+            ${Object.entries(groups).map(([groupName, items]) => {
+              if (!items || items.length === 0) return '';
+              return `
+                <div class="bg-[#F7F6F3] rounded-[16px] p-5 sm:p-6 border border-[#E4E1DA]">
+                  <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-bold text-[#e93b30] pb-1 border-b-[3px] border-[#f48436]">
+                      ${groupName}
+                    </h2>
+                    <span class="text-xs font-semibold text-[#666666]">${items.length} item(s)</span>
+                  </div>
+
+                  <div class="space-y-2.5">
+                    ${items.map(item => {
+                      const isChecked = state.checkedItems.includes(item.text);
+                      const encoded = encodeURIComponent(item.text);
+                      return `
+                        <label
+                          onclick="toggleChecklistItem('${encoded}')"
+                          class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-[14px] border transition cursor-pointer select-none ${
+                            isChecked
+                              ? 'bg-[#fbbc76]/25 border-[#E4E1DA] text-[#666666]'
+                              : 'bg-[#FFFFFF] border-[#E4E1DA] hover:border-[#f46c6c] text-[#1A1A1A]'
+                          }"
+                        >
+                          <div class="flex items-start gap-3">
+                            <input
+                              type="checkbox"
+                              ${isChecked ? 'checked' : ''}
+                              onclick="event.stopPropagation(); toggleChecklistItem('${encoded}')"
+                              class="mt-1 w-5 h-5 accent-[#C7281E] rounded cursor-pointer shrink-0"
+                            />
+                            <span class="text-sm sm:text-base font-medium ${isChecked ? 'line-through text-[#666666]' : 'text-[#1A1A1A]'}">
+                              ${item.text}
+                            </span>
+                          </div>
+
+                          <div class="flex flex-wrap items-center justify-end gap-1.5 shrink-0">
+                            ${item.zones.map(z => {
+                              const b = getComplianceBadge(z.level);
+                              return `
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${b.bg} ${b.text} ${b.border}">
+                                  <span class="w-2 h-2 rounded-full ${b.dot}"></span>
+                                  <span>${z.name} • ${b.label}</span>
+                                </span>
+                              `;
+                            }).join('')}
+                          </div>
+                        </label>
+                      `;
+                    }).join('')}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    /********************************************************************
+     * TASK 6: ASSISTANT CHATBOT SCREEN
+     ********************************************************************/
+    function sendChatQuestion(questionText) {
+      const inputEl = document.getElementById('assistant-input');
+      const q = (questionText !== undefined ? questionText : (inputEl ? inputEl.value : '')).trim();
+      if (!q || state.isBotTyping) return;
+      if (inputEl) inputEl.value = '';
+
+      state.messages.push({
+        id: 'u-' + Date.now(),
+        sender: 'user',
+        text: q
+      });
+      state.isBotTyping = true;
+      renderApp();
+      scrollChatToBottom();
+
+      setTimeout(() => {
+        const result = getAnswer(q);
+        state.messages.push({
+          id: 'b-' + Date.now(),
+          sender: 'bot',
+          text: result.answer,
+          citation: result.citation,
+          zone: result.zone,
+          verified: result.verified
+        });
+        state.isBotTyping = false;
+        renderApp();
+        scrollChatToBottom();
+      }, 800);
+    }
+
+    function scrollChatToBottom() {
+      const chatBox = document.getElementById('chat-scroll-box');
+      if (chatBox) {
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    }
+
+    function renderAssistantScreen() {
+      return `
+        <div class="max-w-3xl mx-auto flex flex-col h-[calc(100dvh-190px)] min-h-[480px] bg-[#F7F6F3] rounded-[16px] border border-[#E4E1DA] border-t-[3px] border-t-[#f48436] overflow-hidden">
+          <div class="px-5 py-4 bg-[#FFFFFF] border-b border-[#E4E1DA] flex items-center justify-between">
+            <div>
+              <h1 class="text-lg sm:text-xl font-bold text-[#e93b30] flex items-center gap-2">
+                <span>HomeWise Rule Assistant</span>
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#fbbc76]/25 text-[#1A1A1A] border border-[#E4E1DA]">Clause Cited</span>
+              </h1>
+              <p class="text-xs text-[#666666]">Answers backed by Section 70 of Act 133 & township renovation guidelines</p>
+            </div>
+          </div>
+
+          <div id="chat-scroll-box" class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
+            ${state.messages.map(msg => {
+              if (msg.sender === 'user') {
+                return `
+                  <div class="flex justify-end">
+                    <div class="max-w-[82%] bg-[#fbbc76]/25 text-[#1A1A1A] border border-[#E4E1DA] font-semibold rounded-[16px] rounded-tr-xs px-4 py-3 text-sm sm:text-base">
+                      ${msg.text}
+                    </div>
+                  </div>
+                `;
+              }
+
+              const linkedZone = msg.zone ? getZone(msg.zone) : null;
+              const isZoneInChecklist = linkedZone ? state.selectedZones.includes(linkedZone.id) : false;
+
+              return `
+                <div class="flex justify-start">
+                  <div class="max-w-[90%] sm:max-w-[85%] bg-[#FFFFFF] border border-[#E4E1DA] rounded-[16px] rounded-tl-xs p-4 space-y-3">
+                    ${msg.verified ? `
+                      <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#EAF5EF] text-[#2F8F5B] border border-[#2F8F5B]/30">
+                          <span class="w-2 h-2 rounded-full bg-[#2F8F5B]"></span>
+                          Verified Rule Answer
+                        </span>
+                      </div>
+                    ` : ''}
+
+                    <p class="text-sm sm:text-base text-[#1A1A1A] leading-relaxed">
+                      ${msg.text}
+                    </p>
+
+                    ${msg.citation ? `
+                      <div class="bg-[#F7F6F3] rounded-[12px] p-3.5 border border-[#E4E1DA] border-t-[3px] border-t-[#f48436]">
+                        <div class="text-xs font-bold text-[#1A1A1A]">📜 ${msg.citation.title}</div>
+                        <div class="text-xs text-[#666666] mt-1">${msg.citation.text}</div>
+                      </div>
+                    ` : ''}
+
+                    ${linkedZone ? `
+                      <div class="pt-1 flex flex-wrap items-center gap-2">
+                        <button
+                          onclick="toggleZoneInChecklist('${linkedZone.id}')"
+                          class="px-3.5 py-2 rounded-[12px] text-xs font-bold transition cursor-pointer bg-[#C7281E] hover:bg-[#A82018] text-white"
+                        >
+                          ${isZoneInChecklist ? `✓ Added "${linkedZone.name}" to checklist` : `+ Add "${linkedZone.name}" to checklist`}
+                        </button>
+                        <button
+                          onclick="navigate('/explorer', { zoneId: '${linkedZone.id}' })"
+                          class="px-3 py-2 rounded-[12px] text-xs font-semibold bg-[#F7F6F3] text-[#e93b30] hover:underline border border-[#E4E1DA] cursor-pointer"
+                        >
+                          Inspect in 3D Animation →
+                        </button>
+                      </div>
+                    ` : ''}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+
+            ${state.isBotTyping ? `
+              <div class="flex justify-start">
+                <div class="bg-[#FFFFFF] border border-[#E4E1DA] rounded-[16px] px-4 py-3 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-[#e93b30] typing-dot"></span>
+                  <span class="w-2 h-2 rounded-full bg-[#e93b30] typing-dot"></span>
+                  <span class="w-2 h-2 rounded-full bg-[#e93b30] typing-dot"></span>
+                  <span class="text-xs text-[#666666] ml-2">Checking township clauses...</span>
+                </div>
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="px-4 py-2.5 bg-[#FFFFFF] border-t border-[#E4E1DA]">
+            <div class="text-[11px] text-[#666666] mb-1.5 font-medium">Suggested questions:</div>
+            <div class="flex items-center gap-2 overflow-x-auto pb-1">
+              ${SUGGESTED_QUESTIONS.map(q => `
+                <button
+                  onclick="sendChatQuestion('${q.replace(/'/g, "\\'")}')"
+                  class="shrink-0 px-3 py-1.5 rounded-full bg-[#F7F6F3] hover:bg-[#f49c9c]/15 text-[#1A1A1A] border border-[#E4E1DA] hover:border-[#f46c6c] text-xs font-semibold transition cursor-pointer"
+                >
+                  ${q}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+
+          <form
+            onsubmit="event.preventDefault(); sendChatQuestion();"
+            class="p-3 sm:p-4 bg-[#FFFFFF] border-t border-[#E4E1DA] flex items-center gap-2.5"
+          >
+            <input
+              id="assistant-input"
+              type="text"
+              placeholder="Ask about walls, extensions, permits, work hours, gates..."
+              class="flex-1 bg-[#F7F6F3] border border-[#E4E1DA] focus:border-[#e93b30] rounded-[14px] px-4 py-3 text-sm text-[#1A1A1A] placeholder-[#666666] outline-none"
+            />
+            <button
+              type="submit"
+              class="px-5 py-3 rounded-[14px] bg-[#C7281E] hover:bg-[#A82018] text-white font-bold text-sm transition cursor-pointer shrink-0"
+            >
+              Send
+            </button>
+          </form>
+        </div>
+      `;
+    }
+
+    /********************************************************************
+     * TASK 7: COMMUNITY FEED, POST DETAIL & NEW POST MODAL
+     ********************************************************************/
+    function handleCommunitySearch(val) {
+      state.communitySearch = val;
+      renderApp();
+      const input = document.getElementById('community-search-input');
+      if (input) {
+        input.focus();
+        input.setSelectionRange(val.length, val.length);
+      }
+    }
+
+    function setCommunityFilter(cat) {
+      state.communityFilter = cat;
+      renderApp();
+    }
+
+    function openNewPostModal(open) {
+      state.isNewPostModalOpen = open;
+      renderApp();
+    }
+
+    function submitNewCommunityPost(e) {
+      e.preventDefault();
+      const titleEl = document.getElementById('new-post-title');
+      const textEl = document.getElementById('new-post-text');
+      const catEl = document.getElementById('new-post-category');
+      if (!titleEl || !textEl || !catEl) return;
+
+      const title = titleEl.value.trim();
+      const text = textEl.value.trim();
+      const category = catEl.value;
+      if (!title || !text) return;
+
+      const newPost = {
+        id: 'post-' + Date.now(),
+        title,
+        text,
+        author: `Resident (${state.project})`,
+        time: 'Just now',
+        category,
+        label: 'Resident opinion',
+        comments: []
+      };
+
+      state.posts.unshift(newPost);
+      state.isNewPostModalOpen = false;
+      showToast('Published your post to the Community feed');
+      renderApp();
+    }
+
+    function submitNewComment(e, postId) {
+      e.preventDefault();
+      const input = document.getElementById('new-comment-input');
+      if (!input) return;
+      const text = input.value.trim();
+      if (!text) return;
+
+      const post = state.posts.find(p => p.id === postId);
+      if (post) {
+        post.comments.push({
+          id: 'c-' + Date.now(),
+          author: `You (${state.project})`,
+          time: 'Just now',
+          text
+        });
+        input.value = '';
+        showToast('Comment added');
+        renderApp();
+      }
+    }
+
+    function renderCommunityScreen() {
+      const categories = ['All', 'Tips', 'Vendors', 'Questions'];
+      const query = state.communitySearch.toLowerCase().trim();
+
+      const filteredPosts = state.posts.filter(p => {
+        const matchesCat = state.communityFilter === 'All' || p.category === state.communityFilter;
+        const matchesQuery = !query ||
+          p.title.toLowerCase().includes(query) ||
+          p.text.toLowerCase().includes(query) ||
+          p.author.toLowerCase().includes(query);
+        return matchesCat && matchesQuery;
+      });
+
+      return `
+        <div class="max-w-4xl mx-auto space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h1 class="text-2xl sm:text-3xl font-bold text-[#e93b30] pb-1.5 border-b-[3px] border-[#f48436] inline-block">Township Community</h1>
+              <p class="text-xs sm:text-sm text-[#666666] mt-2">
+                Official rule reminders and real renovation experiences from Sime Darby Property residents
+              </p>
+            </div>
+            <button
+              onclick="openNewPostModal(true)"
+              class="px-5 py-3 rounded-[16px] bg-[#C7281E] hover:bg-[#A82018] text-white font-bold text-sm transition cursor-pointer"
+            >
+              + New post
+            </button>
+          </div>
+
+          <div class="bg-[#F7F6F3] rounded-[16px] p-4 border border-[#E4E1DA] space-y-3">
+            <input
+              id="community-search-input"
+              type="text"
+              value="${state.communitySearch.replace(/"/g, '&quot;')}"
+              oninput="handleCommunitySearch(this.value)"
+              placeholder="Search tips, vendors, wet kitchen, dust control, gate..."
+              class="w-full bg-[#FFFFFF] border border-[#E4E1DA] focus:border-[#e93b30] rounded-[14px] px-4 py-3 text-sm text-[#1A1A1A] placeholder-[#666666] outline-none"
+            />
+            <div class="flex flex-wrap items-center gap-2">
+              ${categories.map(cat => `
+                <button
+                  onclick="setCommunityFilter('${cat}')"
+                  class="px-3.5 py-1.5 rounded-full text-xs font-semibold transition cursor-pointer border ${
+                    state.communityFilter === cat
+                      ? 'bg-[#fbbc76]/25 text-[#1A1A1A] border-[#e93b30]'
+                      : 'bg-[#FFFFFF] text-[#666666] hover:text-[#1A1A1A] border-[#E4E1DA] hover:border-[#f46c6c]'
+                  }"
+                >
+                  ${cat}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="space-y-3.5">
+            ${filteredPosts.length === 0 ? `
+              <div class="bg-[#F7F6F3] rounded-[16px] p-8 text-center border border-[#E4E1DA]">
+                <p class="text-base font-semibold text-[#1A1A1A]">No posts match your search.</p>
+                <button onclick="state.communitySearch=''; state.communityFilter='All'; renderApp();" class="mt-3 text-xs font-semibold text-[#e93b30] underline cursor-pointer">
+                  Clear filters
+                </button>
+              </div>
+            ` : filteredPosts.map(post => {
+              const isOfficial = post.label === 'Official rule';
+              return `
+                <div
+                  onclick="navigate('/community-detail', { postId: '${post.id}' })"
+                  class="bg-[#F7F6F3] rounded-[16px] p-5 border transition cursor-pointer hover:border-[#f46c6c] hover:bg-[#f49c9c]/10 ${
+                    isOfficial ? 'border-[#E4E1DA] border-t-[3px] border-t-[#f48436]' : 'border-[#E4E1DA]'
+                  }"
+                >
+                  <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+                    <div class="flex items-center gap-2">
+                      <span class="px-3 py-1 rounded-full text-xs font-bold border ${
+                        isOfficial
+                          ? 'bg-[#fbbc76]/25 text-[#1A1A1A] border-[#f48436]'
+                          : 'bg-[#FFFFFF] text-[#666666] border-[#E4E1DA]'
+                      }">
+                        ${isOfficial ? '🏛️ Official rule' : '💬 Resident opinion'}
+                      </span>
+                      <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#FFFFFF] text-[#1A1A1A] border border-[#E4E1DA]">
+                        ${post.category}
+                      </span>
+                    </div>
+                    <span class="text-xs text-[#666666]">${post.time}</span>
+                  </div>
+
+                  <h2 class="text-lg font-bold text-[#1A1A1A]">${post.title}</h2>
+                  <p class="mt-1.5 text-sm text-[#666666] line-clamp-2 leading-relaxed">
+                    ${post.text}
+                  </p>
+
+                  <div class="mt-4 pt-3 border-t border-[#E4E1DA] flex items-center justify-between text-xs text-[#666666]">
+                    <span>By <strong class="text-[#1A1A1A]">${post.author}</strong></span>
+                    <span class="text-[#e93b30] font-semibold">💬 ${post.comments.length} comment(s) →</span>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+
+        ${state.isNewPostModalOpen ? `
+          <div class="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+            <div class="bg-[#FFFFFF] rounded-[16px] max-w-lg w-full p-6 border border-[#E4E1DA] border-t-[3px] border-t-[#f48436] animate-page">
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-[#e93b30]">Share with Neighbors</h2>
+                <button onclick="openNewPostModal(false)" class="text-[#666666] hover:text-[#1A1A1A] text-xl font-bold cursor-pointer">×</button>
+              </div>
+              <div class="mb-4 px-3 py-2 rounded-[12px] bg-[#F7F6F3] border border-[#E4E1DA] text-xs text-[#666666]">
+                Note: All resident posts are automatically labeled <strong class="text-[#1A1A1A]">Resident opinion</strong>.
+              </div>
+              <form onsubmit="submitNewCommunityPost(event)" class="space-y-4">
+                <div>
+                  <label class="block text-xs font-semibold uppercase text-[#666666] mb-1">Category</label>
+                  <select id="new-post-category" class="w-full bg-[#F7F6F3] border border-[#E4E1DA] rounded-[12px] px-3.5 py-2.5 text-sm text-[#1A1A1A] outline-none">
+                    <option value="Tips">Tips</option>
+                    <option value="Vendors">Vendors</option>
+                    <option value="Questions">Questions</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold uppercase text-[#666666] mb-1">Title</label>
+                  <input id="new-post-title" required type="text" placeholder="e.g., Great experience with our awning permit submission" class="w-full bg-[#F7F6F3] border border-[#E4E1DA] rounded-[12px] px-3.5 py-2.5 text-sm text-[#1A1A1A] outline-none" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold uppercase text-[#666666] mb-1">Your Message</label>
+                  <textarea id="new-post-text" required rows="4" placeholder="Share your tip, vendor review, or question..." class="w-full bg-[#F7F6F3] border border-[#E4E1DA] rounded-[12px] px-3.5 py-2.5 text-sm text-[#1A1A1A] outline-none"></textarea>
+                </div>
+                <div class="flex justify-end gap-2.5 pt-2">
+                  <button type="button" onclick="openNewPostModal(false)" class="px-4 py-2.5 rounded-[12px] border border-[#E4E1DA] text-sm text-[#666666] hover:text-[#1A1A1A] cursor-pointer">
+                    Cancel
+                  </button>
+                  <button type="submit" class="px-5 py-2.5 rounded-[12px] bg-[#C7281E] hover:bg-[#A82018] text-white font-bold text-sm cursor-pointer">
+                    Publish Post
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        ` : ''}
+      `;
+    }
+
+    function renderCommunityDetailScreen() {
+      const post = state.posts.find(p => p.id === state.selectedPostId) || state.posts[0];
+      const isOfficial = post.label === 'Official rule';
+
+      return `
+        <div class="max-w-3xl mx-auto space-y-5">
+          <button
+            onclick="navigate('/community')"
+            class="inline-flex items-center gap-2 text-sm font-semibold text-[#e93b30] hover:underline cursor-pointer"
+          >
+            ← Back to Community feed
+          </button>
+
+          <div class="bg-[#F7F6F3] rounded-[16px] p-6 border border-[#E4E1DA] border-t-[3px] border-t-[#f48436]">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <div class="flex items-center gap-2">
+                <span class="px-3 py-1 rounded-full text-xs font-bold border ${
+                  isOfficial
+                    ? 'bg-[#fbbc76]/25 text-[#1A1A1A] border-[#f48436]'
+                    : 'bg-[#FFFFFF] text-[#666666] border-[#E4E1DA]'
+                }">
+                  ${isOfficial ? '🏛️ Official rule' : '💬 Resident opinion'}
+                </span>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#FFFFFF] text-[#1A1A1A] border border-[#E4E1DA]">
+                  ${post.category}
+                </span>
+              </div>
+              <span class="text-xs text-[#666666]">${post.time}</span>
+            </div>
+
+            <h1 class="text-xl sm:text-2xl font-bold text-[#e93b30]">${post.title}</h1>
+            <div class="text-xs text-[#666666] mt-1">Posted by <strong class="text-[#1A1A1A]">${post.author}</strong></div>
+
+            <p class="mt-4 text-sm sm:text-base text-[#1A1A1A] leading-relaxed whitespace-pre-line">
+              ${post.text}
+            </p>
+          </div>
+
+          <div class="bg-[#F7F6F3] rounded-[16px] p-6 border border-[#E4E1DA] space-y-4">
+            <h2 class="text-lg font-bold text-[#e93b30] pb-1 border-b-[3px] border-[#f48436] inline-block">Comments (${post.comments.length})</h2>
+
+            <div class="space-y-3">
+              ${post.comments.map(c => `
+                <div class="bg-[#FFFFFF] rounded-[14px] p-4 border border-[#E4E1DA]">
+                  <div class="flex items-center justify-between text-xs text-[#666666] mb-1.5">
+                    <strong class="text-[#1A1A1A]">${c.author}</strong>
+                    <span>${c.time}</span>
+                  </div>
+                  <p class="text-sm text-[#1A1A1A] leading-relaxed">${c.text}</p>
+                </div>
+              `).join('')}
+            </div>
+
+            <form onsubmit="submitNewComment(event, '${post.id}')" class="pt-3 flex gap-2.5">
+              <input
+                id="new-comment-input"
+                type="text"
+                required
+                placeholder="Write a helpful reply or tip..."
+                class="flex-1 bg-[#FFFFFF] border border-[#E4E1DA] focus:border-[#e93b30] rounded-[14px] px-4 py-3 text-sm text-[#1A1A1A] placeholder-[#666666] outline-none"
+              />
+              <button
+                type="submit"
+                class="px-5 py-3 rounded-[14px] bg-[#C7281E] hover:bg-[#A82018] text-white font-bold text-sm transition cursor-pointer shrink-0"
+              >
+                Reply
+              </button>
+            </form>
+          </div>
+        </div>
+      `;
+    }
+
+    /********************************************************************
+     * MAIN RENDER ORCHESTRATOR
+     ********************************************************************/
+    function renderApp() {
+      const appEl = document.getElementById('app');
+      if (!appEl) return;
+
+      let pageContent = '';
+      if (state.route === '/welcome') {
+        pageContent = renderWelcomeScreen();
+      } else if (state.route === '/setup') {
+        pageContent = renderSetupScreen();
+      } else if (state.route === '/home') {
+        pageContent = renderHomeScreen();
+      } else if (state.route === '/explorer') {
+        pageContent = renderExplorerScreen();
+      } else if (state.route === '/checklist') {
+        pageContent = renderChecklistScreen();
+      } else if (state.route === '/assistant') {
+        pageContent = renderAssistantScreen();
+      } else if (state.route === '/community') {
+        pageContent = renderCommunityScreen();
+      } else if (state.route === '/community-detail') {
+        pageContent = renderCommunityDetailScreen();
+      } else {
+        pageContent = renderWelcomeScreen();
+      }
+
+      appEl.innerHTML = renderNavigationShell(pageContent);
+    }
+
+    function syncRouteFromHash() {
+      const raw = (window.location.hash || '').replace(/^#\/?/, '/');
+      const validRoutes = ['/welcome', '/setup', '/home', '/explorer', '/checklist', '/assistant', '/community', '/community-detail'];
+      if (validRoutes.includes(raw)) {
+        if (!state.mode && raw !== '/welcome' && raw !== '/setup') {
+          state.mode = 'explore';
+        }
+        state.route = raw;
+      }
+    }
+
+    window.addEventListener('load', function () {
+      syncRouteFromHash();
+      renderApp();
+      preloadMediaAssets();
+      if (state.route === '/explorer') {
+        syncExplorerStageMedia(false);
+      }
+    });
+
+    window.addEventListener('hashchange', function () {
+      syncRouteFromHash();
+      renderApp();
+      if (state.route === '/explorer') {
+        syncExplorerStageMedia(false);
+      }
+    });
+
+    window.addEventListener('resize', function () {
+      if (state.route === '/explorer') {
+        resizeThreeHouse();
+      }
+    });
+  </script>
+</div>
+
+</body></html>
